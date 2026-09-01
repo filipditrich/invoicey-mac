@@ -1,0 +1,163 @@
+import Foundation
+import InvoiceyDriveCore
+import Testing
+
+struct PKCETests {
+  @Test func rfc7636S256Vector() throws {
+    let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+    let challenge = try PKCE.challenge(forVerifier: verifier)
+    #expect(challenge == "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM")
+    #expect(PKCE.isValidChallenge(challenge))
+  }
+
+  @Test func generatedVerifierShape() throws {
+    let pkce = try PKCE.generate()
+    #expect((43...128).contains(pkce.verifier.utf8.count))
+    #expect(PKCE.isValidChallenge(pkce.challenge))
+    #expect(pkce.challenge == (try PKCE.challenge(forVerifier: pkce.verifier)))
+    #expect(!pkce.challenge.contains("+"))
+    #expect(!pkce.challenge.contains("/"))
+    #expect(!pkce.challenge.contains("="))
+  }
+
+  @Test func rejectsShortVerifier() {
+    #expect(throws: DriveError.self) {
+      try PKCE.challenge(forVerifier: "too-short")
+    }
+  }
+}
+
+struct DrivePathTests {
+  @Test func joinRejectsParentTraversal() {
+    #expect(throws: DriveError.parentTraversal) {
+      try DrivePaths.joinRelative(["2026", "..", "secret"])
+    }
+    #expect(throws: DriveError.parentTraversal) {
+      _ = try DrivePaths.splitRelative("../etc/passwd")
+    }
+    #expect(throws: DriveError.parentTraversal) {
+      _ = try DrivePaths.splitRelative("foo/../../x")
+    }
+  }
+
+  @Test func joinRejectsAbsolute() {
+    #expect(throws: DriveError.absolutePath) {
+      _ = try DrivePaths.splitRelative("/etc/passwd")
+    }
+    #expect(throws: DriveError.absolutePath) {
+      _ = try DrivePaths.splitRelative("~/Invoices")
+    }
+  }
+
+  @Test func joinKeepsSafeRelative() throws {
+    let path = try DrivePaths.joinRelative(["Acme", "Filip", "2026", "INV-1.pdf"])
+    #expect(path == "Acme/Filip/2026/INV-1.pdf")
+  }
+}
+
+struct MirrorPathTests {
+  func sampleItem(layout: String, includeIsdoc: Bool = false) -> DriveIndexItem {
+    DriveIndexItem(
+      invoiceId: "inv-1",
+      workspaceId: "ws-1",
+      issuerId: "iss-1",
+      workspaceName: "Acme",
+      issuerName: "Filip Ditrich",
+      layoutRelPath: layout,
+      pdfSha256: "abc",
+      isdocSha256: "def",
+      hasIsdoc: includeIsdoc,
+      includeIsdoc: includeIsdoc,
+      issuedAt: Date(timeIntervalSince1970: 1_720_000_000),
+      docType: "invoice"
+    )
+  }
+
+  @Test func indexItemMapsToMirrorPath() throws {
+    let item = sampleItem(layout: "2026/faktura_12.pdf")
+    let relative = try DrivePaths.relativePath(for: item, kind: .pdf)
+    #expect(relative == "Acme/Filip Ditrich/2026/faktura_12.pdf")
+  }
+
+  @Test func appendsPdfWhenLayoutHasNoExtension() throws {
+    let item = sampleItem(layout: "2026/INV-1")
+    #expect(try DrivePaths.relativePath(for: item, kind: .pdf) == "Acme/Filip Ditrich/2026/INV-1.pdf")
+  }
+
+  @Test func isdocReplacesPdfExtension() throws {
+    let item = sampleItem(layout: "2026/faktura_12.pdf", includeIsdoc: true)
+    #expect(
+      try DrivePaths.relativePath(for: item, kind: .isdoc)
+        == "Acme/Filip Ditrich/2026/faktura_12.isdoc"
+    )
+  }
+
+  @Test func sanitizesSlashInWorkspaceName() throws {
+    let item = DriveIndexItem(
+      invoiceId: "inv-1",
+      workspaceId: "ws-1",
+      issuerId: "iss-1",
+      workspaceName: "Acme/Corp",
+      issuerName: "Filip",
+      layoutRelPath: "doc.pdf",
+      pdfSha256: "",
+      isdocSha256: "",
+      hasIsdoc: false,
+      includeIsdoc: false,
+      issuedAt: Date(),
+      docType: "invoice"
+    )
+    #expect(try DrivePaths.relativePath(for: item, kind: .pdf) == "Acme-Corp/Filip/doc.pdf")
+  }
+
+  @Test func treeBuildsYearFolderThenFile() throws {
+    let item = sampleItem(layout: "2026/faktura_12.pdf")
+    let tree = DriveTree(
+      index: DriveIndex(generatedAt: Date(), items: [item])
+    )
+    let workspaces = tree.children(of: .root)
+    #expect(workspaces.map(\.filename) == ["Acme"])
+    let issuers = tree.children(of: .workspace("ws-1"))
+    #expect(issuers.map(\.filename) == ["Filip Ditrich"])
+    let underIssuer = tree.children(of: .issuer(workspaceId: "ws-1", issuerId: "iss-1"))
+    #expect(underIssuer.map(\.filename) == ["2026"])
+    let year = tree.children(
+      of: .directory(workspaceId: "ws-1", issuerId: "iss-1", relative: "2026")
+    )
+    #expect(year.map(\.filename) == ["faktura_12.pdf"])
+    #expect(year.first?.id == .file(invoiceId: "inv-1", kind: .pdf))
+  }
+}
+
+struct SHASkipTests {
+  @Test func skipsWhenLocalHashMatches() throws {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent(
+      UUID().uuidString,
+      isDirectory: true
+    )
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let file = dir.appendingPathComponent("a.pdf")
+    let data = Data("hello-invoicey".utf8)
+    try data.write(to: file)
+    let sha = SHA256File.hex(of: data)
+    #expect(SHA256File.shouldSkipDownload(at: file, expectedSHA256: sha))
+    #expect(SHA256File.shouldSkipDownload(at: file, expectedSHA256: sha.uppercased()))
+  }
+
+  @Test func downloadsWhenHashDiffersOrMissing() throws {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent(
+      UUID().uuidString,
+      isDirectory: true
+    )
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let file = dir.appendingPathComponent("a.pdf")
+    try Data("hello-invoicey".utf8).write(to: file)
+    #expect(!SHA256File.shouldSkipDownload(at: file, expectedSHA256: "deadbeef"))
+    #expect(!SHA256File.shouldSkipDownload(at: file, expectedSHA256: ""))
+    let missing = dir.appendingPathComponent("nope.pdf")
+    let sha = SHA256File.hex(of: Data("hello-invoicey".utf8))
+    #expect(!SHA256File.shouldSkipDownload(at: missing, expectedSHA256: sha))
+  }
+}
