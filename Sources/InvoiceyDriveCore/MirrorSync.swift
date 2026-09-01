@@ -38,21 +38,29 @@ public struct MirrorSynchronizer: Sendable {
     let relative = try DrivePaths.relativePath(for: item, kind: kind)
     let url = try DrivePaths.mirrorURL(root: root, relativePath: relative)
     let expected = kind == .pdf ? item.pdfSha256 : item.isdocSha256
+    let decision: Decision
     if SHA256File.shouldSkipDownload(at: url, expectedSHA256: expected) {
-      return .skipped
+      decision = .skipped
+    } else {
+      let data = try await download(item: item, kind: kind)
+      try FileManager.default.createDirectory(
+        at: url.deletingLastPathComponent(),
+        withIntermediateDirectories: true
+      )
+      let temp = url.appendingPathExtension("tmp")
+      try data.write(to: temp, options: [.atomic])
+      if FileManager.default.fileExists(atPath: url.path) {
+        try FileManager.default.removeItem(at: url)
+      }
+      try FileManager.default.moveItem(at: temp, to: url)
+      decision = .downloaded
     }
-    let data = try await download(item: item, kind: kind)
-    try FileManager.default.createDirectory(
-      at: url.deletingLastPathComponent(),
-      withIntermediateDirectories: true
-    )
-    let temp = url.appendingPathExtension("tmp")
-    try data.write(to: temp, options: [.atomic])
-    if FileManager.default.fileExists(atPath: url.path) {
-      try FileManager.default.removeItem(at: url)
+    do {
+      try FinderStatusLabel.apply(item.displayStatus, to: url)
+    } catch {
+      fputs("Invoicey Drive: label \(relative): \(error.localizedDescription)\n", stderr)
     }
-    try FileManager.default.moveItem(at: temp, to: url)
-    return .downloaded
+    return decision
   }
 
   func download(item: DriveIndexItem, kind: DriveFileKind) async throws -> Data {

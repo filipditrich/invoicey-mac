@@ -21,6 +21,7 @@ import InvoiceyDriveCore
 ///
 /// Product rules the enumerator already encodes:
 /// - Tree is `workspaceName/issuerName/{layoutRelPath}` from the server index.
+/// - File color tags come from index `displayStatus` (`tagData`); status is not in the filename.
 /// - Finder delete does not cancel the invoice; the next enumerate restores the item.
 /// - Drop-in create is rejected (`DriveError.dropInsIgnored`).
 /// - Cancel only on the web.

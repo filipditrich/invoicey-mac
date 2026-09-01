@@ -66,6 +66,10 @@ public final class InvoiceyDriveItem: NSObject, NSFileProviderItem {
       : [.allowsReading]
     super.init()
   }
+
+  public var tagData: Data? {
+    FinderStatusLabel.tagData(for: node.displayStatus)
+  }
 }
 
 public final class InvoiceyDriveEnumerator: NSObject, NSFileProviderEnumerator, @unchecked Sendable

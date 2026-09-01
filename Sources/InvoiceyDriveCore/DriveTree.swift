@@ -80,6 +80,7 @@ public struct DriveNode: Equatable, Sendable {
   public var invoiceId: String?
   public var fileKind: DriveFileKind?
   public var sha256: String?
+  public var displayStatus: InvoiceDisplayStatus?
   public var contentTypeIdentifier: String
 
   public init(
@@ -90,6 +91,7 @@ public struct DriveNode: Equatable, Sendable {
     invoiceId: String? = nil,
     fileKind: DriveFileKind? = nil,
     sha256: String? = nil,
+    displayStatus: InvoiceDisplayStatus? = nil,
     contentTypeIdentifier: String
   ) {
     self.id = id
@@ -99,6 +101,7 @@ public struct DriveNode: Equatable, Sendable {
     self.invoiceId = invoiceId
     self.fileKind = fileKind
     self.sha256 = sha256
+    self.displayStatus = displayStatus
     self.contentTypeIdentifier = contentTypeIdentifier
   }
 }
@@ -189,6 +192,7 @@ public struct DriveTree: Sendable, Equatable {
         invoiceId: invoiceId,
         fileKind: kind,
         sha256: kind == .pdf ? item.pdfSha256 : item.isdocSha256,
+        displayStatus: item.displayStatus,
         contentTypeIdentifier: kind == .pdf ? "com.adobe.pdf" : "public.xml"
       )
     }

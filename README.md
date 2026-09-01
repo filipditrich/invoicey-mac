@@ -8,7 +8,7 @@ The Mac materializes the **server** index as files:
 {workspaceName}/{issuerName}/{layoutRelPath}.pdf
 ```
 
-Plus `.isdoc` when the index says `includeIsdoc`. Finder delete comes back on the next sync. Drop-ins are ignored. Cancel only on the web.
+Plus `.isdoc` when the index says `includeIsdoc`. Finder color labels follow website status (green paid, orange unpaid/future, red overdue). Status is not in the filename. Finder delete comes back on the next sync. Drop-ins are ignored. Cancel only on the web.
 
 ## Local run (no paid File Provider team)
 

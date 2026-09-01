@@ -56,7 +56,11 @@ struct DrivePathTests {
 }
 
 struct MirrorPathTests {
-  func sampleItem(layout: String, includeIsdoc: Bool = false) -> DriveIndexItem {
+  func sampleItem(
+    layout: String,
+    includeIsdoc: Bool = false,
+    displayStatus: InvoiceDisplayStatus? = nil
+  ) -> DriveIndexItem {
     DriveIndexItem(
       invoiceId: "inv-1",
       workspaceId: "ws-1",
@@ -69,7 +73,8 @@ struct MirrorPathTests {
       hasIsdoc: includeIsdoc,
       includeIsdoc: includeIsdoc,
       issuedAt: Date(timeIntervalSince1970: 1_720_000_000),
-      docType: "invoice"
+      docType: "invoice",
+      displayStatus: displayStatus
     )
   }
 
@@ -127,6 +132,15 @@ struct MirrorPathTests {
     #expect(year.map(\.filename) == ["faktura_12.pdf"])
     #expect(year.first?.id == .file(invoiceId: "inv-1", kind: .pdf))
   }
+
+  @Test func fileNodeCarriesDisplayStatus() throws {
+    let item = sampleItem(layout: "2026/faktura_12.pdf", displayStatus: .overdue)
+    let tree = DriveTree(index: DriveIndex(generatedAt: Date(), items: [item]))
+    let year = tree.children(
+      of: .directory(workspaceId: "ws-1", issuerId: "iss-1", relative: "2026")
+    )
+    #expect(year.first?.displayStatus == .overdue)
+  }
 }
 
 struct SHASkipTests {
@@ -159,5 +173,33 @@ struct SHASkipTests {
     let missing = dir.appendingPathComponent("nope.pdf")
     let sha = SHA256File.hex(of: Data("hello-invoicey".utf8))
     #expect(!SHA256File.shouldSkipDownload(at: missing, expectedSHA256: sha))
+  }
+}
+
+struct FinderStatusLabelTests {
+  @Test func mapsWebsiteStatusToFinderColors() {
+    #expect(FinderStatusLabel.number(for: .paid) == 2)
+    #expect(FinderStatusLabel.number(for: .unpaid) == 7)
+    #expect(FinderStatusLabel.number(for: .future) == 7)
+    #expect(FinderStatusLabel.number(for: .overdue) == 6)
+    #expect(FinderStatusLabel.number(for: .draft) == 0)
+    #expect(FinderStatusLabel.number(for: .cancelled) == 0)
+  }
+
+  @Test func applySetsLabelNumber() throws {
+    let dir = FileManager.default.temporaryDirectory.appendingPathComponent(
+      UUID().uuidString,
+      isDirectory: true
+    )
+    try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    defer { try? FileManager.default.removeItem(at: dir) }
+    let file = dir.appendingPathComponent("faktura.pdf")
+    try Data("pdf".utf8).write(to: file)
+    try FinderStatusLabel.apply(.overdue, to: file)
+    let values = try file.resourceValues(forKeys: [.labelNumberKey])
+    #expect(values.labelNumber == 6)
+    try FinderStatusLabel.apply(nil, to: file)
+    let unchanged = try file.resourceValues(forKeys: [.labelNumberKey])
+    #expect(unchanged.labelNumber == 6)
   }
 }

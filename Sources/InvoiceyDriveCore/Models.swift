@@ -23,6 +23,7 @@ public struct DriveIndexItem: Codable, Sendable, Equatable, Identifiable {
   public var includeIsdoc: Bool
   public var issuedAt: Date
   public var docType: String
+  public var displayStatus: InvoiceDisplayStatus?
 
   public var id: String { invoiceId }
 
@@ -38,7 +39,8 @@ public struct DriveIndexItem: Codable, Sendable, Equatable, Identifiable {
     hasIsdoc: Bool,
     includeIsdoc: Bool,
     issuedAt: Date,
-    docType: String
+    docType: String,
+    displayStatus: InvoiceDisplayStatus? = nil
   ) {
     self.invoiceId = invoiceId
     self.workspaceId = workspaceId
@@ -52,6 +54,7 @@ public struct DriveIndexItem: Codable, Sendable, Equatable, Identifiable {
     self.includeIsdoc = includeIsdoc
     self.issuedAt = issuedAt
     self.docType = docType
+    self.displayStatus = displayStatus
   }
 
   public var shouldMaterializeIsdoc: Bool {
@@ -72,6 +75,16 @@ public struct TokenResponse: Codable, Sendable, Equatable {
 public enum DriveFileKind: String, Sendable, Codable, Equatable {
   case pdf
   case isdoc
+}
+
+/// Same buckets as the website (`resolveDisplayStatus`). Missing on old servers.
+public enum InvoiceDisplayStatus: String, Codable, Sendable, Equatable {
+  case draft
+  case unpaid
+  case overdue
+  case paid
+  case future
+  case cancelled
 }
 
 public struct MirrorSyncResult: Sendable, Equatable {
