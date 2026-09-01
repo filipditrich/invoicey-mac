@@ -16,10 +16,11 @@ public enum SHA256File: Sendable {
     return lhs.caseInsensitiveCompare(rhs) == .orderedSame
   }
 
-  /// Skip when the local file exists and its SHA-256 matches the index. Missing hash never skips.
+  /// Skip when the local file exists and its SHA-256 matches the index.
+  /// Empty hash (on-demand render) skips once the file is already there.
   public static func shouldSkipDownload(at url: URL, expectedSHA256: String) -> Bool {
-    guard !expectedSHA256.isEmpty else { return false }
     guard FileManager.default.fileExists(atPath: url.path) else { return false }
+    if expectedSHA256.isEmpty { return true }
     guard let local = try? hex(ofFile: url) else { return false }
     return matches(local, expectedSHA256)
   }

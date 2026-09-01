@@ -60,11 +60,11 @@ Layout comes from the server (`{year}/{kind}_{number}` by default). Identity is 
 
 | Capability | Detail |
 | ---------- | ------ |
-| **Finder tree** | Workspace then issuer then the layout template. Drafts never appear. Cancelled invoices leave the tree. Rows without a stored PDF are omitted. |
-| **Color labels** | Same `displayStatus` as the website: green paid, orange unpaid or not yet due, red overdue. Status is not in the filename. |
+| **Finder tree** | Workspace then issuer then the layout template. Drafts never appear. Cancelled invoices leave the tree. Native issued invoices without a stored PDF still sync (rendered on download). Imports without a PDF stay omitted. |
+| **Color labels** | Same `displayStatus` as the website: green paid, orange unpaid or not yet due, red overdue. Finder **tags** plus the classic label number. Status is not in the filename. Proton/iCloud often drop tags. |
 | **Optional mirror** | iCloud, Proton Drive, or a local `_faktury` folder. Same relative paths as the index. |
 | **Pairing** | Starts in the Mac app (PKCE). Confirm **Connect this Mac** on Invoicey. Device token in Keychain. Not a Settings PAT. |
-| **Menu bar** | Sync now, last error, open the mirror, sign out. Polls every 60s and on wake. |
+| **Menu bar** | Invoicey document mark. Tints red when anything is overdue, orange when unpaid. Overdue and unpaid counts in the menu. Sync now, open the mirror, sign out. Polls every 60s and on wake. |
 | **macOS 14+** | Distributed as a notarized `.dmg` when the Apple team exists. Not the Mac App Store. |
 
 Finder Locations (a real **Invoicey Drive** domain next to Proton Drive) needs a paid Apple Developer team, an `.app` + File Provider `.appex`, and notarization. Until then, use the mirror folder.

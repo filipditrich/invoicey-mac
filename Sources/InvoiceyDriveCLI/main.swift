@@ -80,7 +80,7 @@ struct InvoiceyDriveCLI {
       }
     }
     print(
-      "Done. downloaded=\(result.downloaded) skipped=\(result.skipped) failed=\(result.failed)"
+      "Done. downloaded=\(result.downloaded) skipped=\(result.skipped) failed=\(result.failed) overdue=\(result.overdue) unpaid=\(result.unpaid)"
     )
   }
 

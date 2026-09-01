@@ -91,13 +91,40 @@ public struct MirrorSyncResult: Sendable, Equatable {
   public var downloaded: Int
   public var skipped: Int
   public var failed: Int
+  public var overdue: Int
+  public var unpaid: Int
+  public var paid: Int
   public var generatedAt: Date?
 
-  public init(downloaded: Int = 0, skipped: Int = 0, failed: Int = 0, generatedAt: Date? = nil) {
+  public init(
+    downloaded: Int = 0,
+    skipped: Int = 0,
+    failed: Int = 0,
+    overdue: Int = 0,
+    unpaid: Int = 0,
+    paid: Int = 0,
+    generatedAt: Date? = nil
+  ) {
     self.downloaded = downloaded
     self.skipped = skipped
     self.failed = failed
+    self.overdue = overdue
+    self.unpaid = unpaid
+    self.paid = paid
     self.generatedAt = generatedAt
+  }
+
+  public mutating func tally(_ status: InvoiceDisplayStatus?) {
+    switch status {
+    case .overdue:
+      overdue += 1
+    case .unpaid, .future:
+      unpaid += 1
+    case .paid:
+      paid += 1
+    default:
+      break
+    }
   }
 }
 

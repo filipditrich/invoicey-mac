@@ -14,6 +14,7 @@ public struct MirrorSynchronizer: Sendable {
     let index = try await client.fetchIndex()
     var result = MirrorSyncResult(generatedAt: index.generatedAt)
     for item in index.items {
+      result.tally(item.displayStatus)
       do {
         let pdfDecision = try await materialize(item: item, kind: .pdf)
         accumulate(pdfDecision, into: &result)
