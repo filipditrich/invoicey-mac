@@ -44,6 +44,9 @@ let package = Package(
       dependencies: ["InvoiceyDriveCore"],
       path: "Sources/InvoiceyDrive",
       exclude: ["Info.plist"],
+      resources: [
+        .process("Resources"),
+      ],
       swiftSettings: [
         .swiftLanguageMode(.v6),
       ],

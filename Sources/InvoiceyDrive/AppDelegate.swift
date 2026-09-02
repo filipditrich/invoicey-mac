@@ -43,6 +43,7 @@ final class StatusItemController: NSObject {
   var configStore: AppConfigStore?
   var pollTimer: Timer?
   var lastStatusLine = "Connect Invoicey"
+  var lastCounts = MirrorSyncResult()
 
   func install() {
     do {
@@ -50,12 +51,7 @@ final class StatusItemController: NSObject {
     } catch {
       lastStatusLine = error.localizedDescription
     }
-    if let button = statusItem.button {
-      button.image = NSImage(
-        systemSymbolName: "externaldrive",
-        accessibilityDescription: "Invoicey Drive"
-      )
-    }
+    applyStatusAppearance()
     rebuildMenu()
   }
 
@@ -84,6 +80,25 @@ final class StatusItemController: NSObject {
     statusLine.target = paired ? nil : self
     statusLine.isEnabled = true
     menu.addItem(statusLine)
+
+    if paired, lastCounts.overdue > 0 {
+      let overdue = NSMenuItem(
+        title: "Overdue · \(lastCounts.overdue)",
+        action: nil,
+        keyEquivalent: ""
+      )
+      overdue.isEnabled = false
+      menu.addItem(overdue)
+    }
+    if paired, lastCounts.unpaid > 0 {
+      let unpaid = NSMenuItem(
+        title: "Unpaid · \(lastCounts.unpaid)",
+        action: nil,
+        keyEquivalent: ""
+      )
+      unpaid.isEnabled = false
+      menu.addItem(unpaid)
+    }
 
     let openItem = NSMenuItem(
       title: "Open Invoicey Drive",
@@ -221,7 +236,9 @@ final class StatusItemController: NSObject {
       let store = try store()
       var config = try store.load()
       guard let stored = try tokens.load() else {
+        lastCounts = MirrorSyncResult()
         lastStatusLine = "Connect Invoicey"
+        applyStatusAppearance()
         rebuildMenu()
         return
       }
@@ -241,10 +258,22 @@ final class StatusItemController: NSObject {
           current.mirrorPath = root.path
         }
       }
-      lastStatusLine = result.failed > 0 ? "Sync finished with errors" : "Synced just now"
+      lastCounts = result
+      if result.failed > 0 {
+        lastStatusLine = "Sync finished with errors"
+      } else if result.overdue > 0 {
+        lastStatusLine = "\(result.overdue) overdue"
+      } else if result.unpaid > 0 {
+        lastStatusLine = "\(result.unpaid) unpaid"
+      } else {
+        lastStatusLine = "Synced just now"
+      }
+      applyStatusAppearance()
       rebuildMenu()
     } catch DriveError.notPaired, DriveError.unauthorized {
+      lastCounts = MirrorSyncResult()
       lastStatusLine = "Connect Invoicey"
+      applyStatusAppearance()
       rebuildMenu()
     } catch {
       lastStatusLine = error.localizedDescription
@@ -259,11 +288,31 @@ final class StatusItemController: NSObject {
       let stored = try tokens.load()
       let client = DriveClient(baseURL: config.resolvedAPIURL, token: stored?.value)
       try await DriveSession.signOut(client: client, tokens: tokens, config: store)
+      lastCounts = MirrorSyncResult()
       lastStatusLine = "Connect Invoicey"
+      applyStatusAppearance()
       rebuildMenu()
     } catch {
       present(error)
     }
+  }
+
+  func applyStatusAppearance() {
+    guard let button = statusItem.button else { return }
+    button.image = StatusMark.image(severity: lastCounts.menuSeverity)
+    button.image?.isTemplate = lastCounts.menuSeverity == .idle
+    button.toolTip = statusTooltip()
+  }
+
+  func statusTooltip() -> String {
+    var parts = ["Invoicey Drive"]
+    if lastCounts.overdue > 0 {
+      parts.append("\(lastCounts.overdue) overdue")
+    }
+    if lastCounts.unpaid > 0 {
+      parts.append("\(lastCounts.unpaid) unpaid")
+    }
+    return parts.joined(separator: " · ")
   }
 
   func store() throws -> AppConfigStore {

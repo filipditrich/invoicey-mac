@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://invoicey.ditrich.me">
-    <img src="docs/assets/readme/logo.png" width="88" height="88" alt="Invoicey"/>
+    <img src="docs/assets/brand/invoicey-lockup-on-light.svg" width="240" height="64" alt="Invoicey"/>
   </a>
 </p>
 
@@ -15,10 +15,10 @@
 </p>
 
 <p align="center">
-  <a href="https://invoicey.ditrich.me"><img src="https://img.shields.io/badge/product-invoicey.ditrich.me-914522?style=for-the-badge" alt="Open Invoicey"/></a>
-  <a href="https://invoicey.ditrich.me/docs/integrations/invoicey-drive"><img src="https://img.shields.io/badge/docs-invoicey%20drive-2A1810?style=for-the-badge" alt="Drive docs"/></a>
-  <a href="https://github.com/filipditrich/inveoiceyai"><img src="https://img.shields.io/badge/sibling-inveoiceyai-C4784A?style=for-the-badge" alt="Invoicey turborepo"/></a>
-  <img src="https://img.shields.io/badge/macos-14%2B-2A1810?style=for-the-badge" alt="macOS 14+"/>
+  <a href="https://invoicey.ditrich.me"><img src="https://img.shields.io/badge/product-invoicey.ditrich.me-f97316?style=for-the-badge" alt="Open Invoicey"/></a>
+  <a href="https://invoicey.ditrich.me/docs/integrations/invoicey-drive"><img src="https://img.shields.io/badge/docs-invoicey%20drive-18181b?style=for-the-badge" alt="Drive docs"/></a>
+  <a href="https://github.com/filipditrich/inveoiceyai"><img src="https://img.shields.io/badge/sibling-inveoiceyai-f97316?style=for-the-badge" alt="Invoicey turborepo"/></a>
+  <img src="https://img.shields.io/badge/macos-14%2B-18181b?style=for-the-badge" alt="macOS 14+"/>
 </p>
 
 <p align="center">
@@ -26,6 +26,7 @@
   <a href="#what-you-get">What you get</a> ·
   <a href="#pair-this-mac">Pair this Mac</a> ·
   <a href="#documentation">Docs</a> ·
+  <a href="https://invoicey.ditrich.me/brand">Brand</a> ·
   <a href="#license">License</a>
 </p>
 
@@ -60,11 +61,11 @@ Layout comes from the server (`{year}/{kind}_{number}` by default). Identity is 
 
 | Capability | Detail |
 | ---------- | ------ |
-| **Finder tree** | Workspace then issuer then the layout template. Drafts never appear. Cancelled invoices leave the tree. Rows without a stored PDF are omitted. |
-| **Color labels** | Same `displayStatus` as the website: green paid, orange unpaid or not yet due, red overdue. Status is not in the filename. |
+| **Finder tree** | Workspace then issuer then the layout template. Drafts never appear. Cancelled invoices leave the tree. Native issued invoices without a stored PDF still sync (rendered on download). Imports without a PDF stay omitted. |
+| **Color labels** | Same `displayStatus` as the website: green paid, orange unpaid or not yet due, red overdue. Finder **tags** plus the classic label number. Status is not in the filename. Proton/iCloud often drop tags. |
 | **Optional mirror** | iCloud, Proton Drive, or a local `_faktury` folder. Same relative paths as the index. |
 | **Pairing** | Starts in the Mac app (PKCE). Confirm **Connect this Mac** on Invoicey. Device token in Keychain. Not a Settings PAT. |
-| **Menu bar** | Sync now, last error, open the mirror, sign out. Polls every 60s and on wake. |
+| **Menu bar** | Invoicey I monogram. Tints red when anything is overdue, orange when unpaid. Overdue and unpaid counts in the menu. Sync now, open the mirror, sign out. Polls every 60s and on wake. |
 | **macOS 14+** | Distributed as a notarized `.dmg` when the Apple team exists. Not the Mac App Store. |
 
 Finder Locations (a real **Invoicey Drive** domain next to Proton Drive) needs a paid Apple Developer team, an `.app` + File Provider `.appex`, and notarization. Until then, use the mirror folder.
@@ -101,6 +102,7 @@ Never paste a PAT. `swift run` uses a loopback callback (`http://127.0.0.1:<port
 | Doc | What it covers |
 | --- | -------------- |
 | [Invoicey Drive guide](https://invoicey.ditrich.me/docs/integrations/invoicey-drive) | Install, tokens, iCloud vs Invoicey Drive |
+| [Invoicey brand](https://invoicey.ditrich.me/brand) | Compact mark and full wordmark |
 | [Invoicey](https://github.com/filipditrich/inveoiceyai) | Product, web, MCP, Slack, Drive API |
 | [Account Settings](https://invoicey.ditrich.me/settings/account/drive) | Layout template, devices, download |
 | [`Sources/FileProvider/README.md`](Sources/FileProvider/README.md) | What the enumerator already encodes vs what Xcode still needs |

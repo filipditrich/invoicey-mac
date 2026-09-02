@@ -169,10 +169,11 @@ struct SHASkipTests {
     let file = dir.appendingPathComponent("a.pdf")
     try Data("hello-invoicey".utf8).write(to: file)
     #expect(!SHA256File.shouldSkipDownload(at: file, expectedSHA256: "deadbeef"))
-    #expect(!SHA256File.shouldSkipDownload(at: file, expectedSHA256: ""))
     let missing = dir.appendingPathComponent("nope.pdf")
     let sha = SHA256File.hex(of: Data("hello-invoicey".utf8))
     #expect(!SHA256File.shouldSkipDownload(at: missing, expectedSHA256: sha))
+    #expect(SHA256File.shouldSkipDownload(at: file, expectedSHA256: ""))
+    #expect(!SHA256File.shouldSkipDownload(at: missing, expectedSHA256: ""))
   }
 }
 
@@ -184,6 +185,20 @@ struct FinderStatusLabelTests {
     #expect(FinderStatusLabel.number(for: .overdue) == 6)
     #expect(FinderStatusLabel.number(for: .draft) == 0)
     #expect(FinderStatusLabel.number(for: .cancelled) == 0)
+    #expect(FinderStatusLabel.tagName(for: .paid) == "Green")
+    #expect(FinderStatusLabel.tagName(for: .unpaid) == "Orange")
+    #expect(FinderStatusLabel.tagName(for: .overdue) == "Red")
+  }
+
+  @Test func mergeKeepsUserTagsAndReplacesColor() {
+    #expect(
+      FinderStatusLabel.mergeTagNames(existing: ["Archive", "Red"], status: .paid)
+        == ["Archive", "Green"]
+    )
+    #expect(
+      FinderStatusLabel.mergeTagNames(existing: ["Červená"], status: .unpaid) == ["Orange"]
+    )
+    #expect(FinderStatusLabel.isFinderColorTag("Red\n6"))
   }
 
   @Test func applySetsLabelNumber() throws {
@@ -201,5 +216,21 @@ struct FinderStatusLabelTests {
     try FinderStatusLabel.apply(nil, to: file)
     let unchanged = try file.resourceValues(forKeys: [.labelNumberKey])
     #expect(unchanged.labelNumber == 6)
+    if #available(macOS 26.0, *) {
+      let tagged = try file.resourceValues(forKeys: [.tagNamesKey])
+      #expect(tagged.tagNames?.contains("Red") == true)
+    }
+  }
+
+  @Test func tallyCountsWebsiteStatuses() {
+    var result = MirrorSyncResult()
+    result.tally(.overdue)
+    result.tally(.unpaid)
+    result.tally(.future)
+    result.tally(.paid)
+    result.tally(.draft)
+    #expect(result.overdue == 1)
+    #expect(result.unpaid == 2)
+    #expect(result.paid == 1)
   }
 }
