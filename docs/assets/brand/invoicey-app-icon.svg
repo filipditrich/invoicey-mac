@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Invoicey app icon</title>
+  <rect width="512" height="512" rx="116" fill="#101012"/>
+  <rect x="10" y="10" width="492" height="492" rx="108" fill="none" stroke="#fff" stroke-opacity=".08" stroke-width="4"/>
+  <rect x="132" y="134" width="190" height="46" rx="23" fill="#f5f5f4"/>
+  <rect x="338" y="134" width="42" height="46" rx="21" fill="#f97316"/>
+  <rect x="233" y="157" width="46" height="198" rx="23" fill="#f5f5f4"/>
+  <rect x="132" y="332" width="248" height="46" rx="23" fill="#f5f5f4"/>
+</svg>
