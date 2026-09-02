@@ -14,13 +14,16 @@ enum StatusMark {
     case .idle:
       return source
     case .unpaid:
-      return tint(source, NSColor(srgbRed: 1, green: 0.584, blue: 0, alpha: 1))
+      return tint(
+        source,
+        NSColor(srgbRed: 0.976_470_6, green: 0.450_980_4, blue: 0.086_274_5, alpha: 1)
+      )
     case .overdue:
       return tint(source, NSColor(srgbRed: 1, green: 0.231, blue: 0.188, alpha: 1))
     }
   }
 
-  /// Invoicey document + check, drawn as a menu-bar silhouette.
+  /// Invoicey I monogram, drawn as a menu-bar silhouette.
   static func glyph(template: Bool) -> NSImage {
     let size = NSSize(width: 18, height: 18)
     let pixels = 36
@@ -51,35 +54,36 @@ enum StatusMark {
     return image
   }
 
-  static func drawGlyph(in _: NSRect) {
+  static func drawGlyph(in rect: NSRect) {
     guard let ctx = NSGraphicsContext.current?.cgContext else { return }
-    ctx.setStrokeColor(NSColor.black.cgColor)
-    ctx.setFillColor(NSColor.black.cgColor)
-    ctx.setLineWidth(1.35)
-    ctx.addPath(
-      CGPath(
-        roundedRect: CGRect(x: 2.4, y: 3.6, width: 10.2, height: 12.2),
-        cornerWidth: 1.5,
-        cornerHeight: 1.5,
-        transform: nil
-      )
+    let scale = min(rect.width, rect.height) / 64
+    let origin = CGPoint(
+      x: rect.midX - (32 * scale),
+      y: rect.midY - (32 * scale)
     )
-    ctx.strokePath()
-    ctx.move(to: CGPoint(x: 9.0, y: 15.8))
-    ctx.addLine(to: CGPoint(x: 12.6, y: 15.8))
-    ctx.addLine(to: CGPoint(x: 12.6, y: 12.2))
-    ctx.closePath()
+    let bars = [
+      CGRect(x: 16, y: 41, width: 24, height: 6),
+      CGRect(x: 44, y: 41, width: 6, height: 6),
+      CGRect(x: 29, y: 19, width: 6, height: 25),
+      CGRect(x: 16, y: 16, width: 34, height: 6),
+    ]
+
+    ctx.saveGState()
+    ctx.translateBy(x: origin.x, y: origin.y)
+    ctx.scaleBy(x: scale, y: scale)
+    ctx.setFillColor(NSColor.black.cgColor)
+    for bar in bars {
+      ctx.addPath(
+        CGPath(
+          roundedRect: bar,
+          cornerWidth: 3,
+          cornerHeight: 3,
+          transform: nil
+        )
+      )
+    }
     ctx.fillPath()
-    ctx.fillEllipse(in: CGRect(x: 8.6, y: 2.0, width: 7.2, height: 7.2))
-    ctx.setBlendMode(.destinationOut)
-    ctx.setLineWidth(1.25)
-    ctx.setLineCap(.round)
-    ctx.setLineJoin(.round)
-    ctx.move(to: CGPoint(x: 10.3, y: 5.5))
-    ctx.addLine(to: CGPoint(x: 11.4, y: 4.4))
-    ctx.addLine(to: CGPoint(x: 13.6, y: 6.8))
-    ctx.strokePath()
-    ctx.setBlendMode(.normal)
+    ctx.restoreGState()
   }
 
   static func tint(_ source: NSImage, _ color: NSColor) -> NSImage {
