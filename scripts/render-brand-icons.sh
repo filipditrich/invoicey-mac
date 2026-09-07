@@ -55,11 +55,12 @@ cp "$iconset/icon_512x512.png" "$scratch/InvoiceyDrive.iconset/icon_512x512.png"
 cp "$iconset/icon_512x512@2x.png" "$scratch/InvoiceyDrive.iconset/icon_512x512@2x.png"
 iconutil --convert icns --output "$resources/InvoiceyDrive.icns" "$scratch/InvoiceyDrive.iconset"
 
-# DMG window background: paper field + wordmark
+# Finder paints DMG backgrounds 1:1 in points. A 2x PNG crops and misaligns.
 mkdir -p "$dmg_dir"
-rsvg-convert --width 1320 --height 880 "$dmg_dir/background.svg" -o "$scratch/bg.png"
-rsvg-convert --width 360 --height 96 "$lockup" -o "$scratch/lockup.png"
-magick "$scratch/bg.png" "$scratch/lockup.png" -gravity north -geometry +0+36 -composite "$dmg_dir/background.png"
+rsvg-convert --width 600 --height 400 "$dmg_dir/background.svg" -o "$scratch/bg.png"
+rsvg-convert --width 200 --height 53 "$lockup" -o "$scratch/lockup.png"
+magick "$scratch/bg.png" "$scratch/lockup.png" -gravity north -geometry +0+22 -composite \
+  -alpha off -colorspace sRGB "$dmg_dir/background.png"
 
 echo "wrote $iconset"
 echo "wrote $resources/InvoiceyDrive.icns"

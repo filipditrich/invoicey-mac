@@ -51,7 +51,7 @@ if [[ ! -d "$vol" || -z "$dev" ]]; then
   exit 1
 fi
 
-# Finder must apply icon positions and the background picture.
+# Window 600x400 must match background.png pixels. Finder maps those 1:1.
 osascript <<EOF
 tell application "Finder"
   tell disk "Invoicey Drive"
@@ -59,16 +59,22 @@ tell application "Finder"
     set current view of container window to icon view
     set toolbar visible of container window to false
     set statusbar visible of container window to false
-    set the bounds of container window to {200, 140, 860, 580}
+    try
+      set sidebar width of container window to 0
+    end try
+    set the bounds of container window to {240, 160, 840, 560}
     set theViewOptions to the icon view options of container window
     set arrangement of theViewOptions to not arranged
     set icon size of theViewOptions to 128
     set text size of theViewOptions to 13
     set background picture of theViewOptions to file ".background:background.png"
-    set position of item "Invoicey Drive.app" of container window to {160, 220}
-    set position of item "Applications" of container window to {500, 220}
+    set position of item "Invoicey Drive.app" of container window to {150, 220}
+    set position of item "Applications" of container window to {450, 220}
+    set extension hidden of item "Invoicey Drive.app" to true
+    set the bounds of container window to {240, 160, 840, 560}
     close
     open
+    set the bounds of container window to {240, 160, 840, 560}
     update without registering applications
     delay 1
   end tell
