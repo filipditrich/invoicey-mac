@@ -27,6 +27,7 @@
 		9959EE637421EDFB94B2204C /* FileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29F1C52797AEC6F0C837671A /* FileProvider.framework */; };
 		9A3124AE7B23CD9DFE68C5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CBBA1334719EBDA0EBFC790 /* Assets.xcassets */; };
 		9BD670B33158BE1D3B4D7965 /* DriveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0051B8A759A2D5B0EFF5838E /* DriveSession.swift */; };
+		A3D88926117077EEE9A4F6DE /* AppUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D579E568FD5B03F96DCCEEEF /* AppUpdate.swift */; };
 		A5659A1A696F79228BB5CF33 /* PairingMailbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB16B03B05E559A9161F038B /* PairingMailbox.swift */; };
 		B1897B507677EC64BADABDFA /* SHA256File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9D69377E4590E3E7715651 /* SHA256File.swift */; };
 		B60694B6737C4F402B702C7C /* DriveClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21FB2F72D2E949C7278C1A97 /* DriveClient.swift */; };
@@ -107,6 +108,7 @@
 		C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderStatusLabel.swift; sourceTree = "<group>"; };
 		C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = InvoiceyDrive.icns; sourceTree = "<group>"; };
 		D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveConstants.swift; sourceTree = "<group>"; };
+		D579E568FD5B03F96DCCEEEF /* AppUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdate.swift; sourceTree = "<group>"; };
 		E442320D51E786B076F64577 /* DrivePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivePaths.swift; sourceTree = "<group>"; };
 		EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMark.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -139,6 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				A8E0A02AB25C4C93BFDBCEA4 /* AppConfig.swift */,
+				D579E568FD5B03F96DCCEEEF /* AppUpdate.swift */,
 				21FB2F72D2E949C7278C1A97 /* DriveClient.swift */,
 				D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */,
 				45AB63353296D8E195AF00EA /* DriveError.swift */,
@@ -378,6 +381,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CE01A9F796B1DA7F89513C92 /* AppConfig.swift in Sources */,
+				A3D88926117077EEE9A4F6DE /* AppUpdate.swift in Sources */,
 				B60694B6737C4F402B702C7C /* DriveClient.swift in Sources */,
 				347AFD00A5108141B19FF26E /* DriveConstants.swift in Sources */,
 				22E9D3375260C8897EDB1FDA /* DriveError.swift in Sources */,
@@ -461,7 +465,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -477,7 +481,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
@@ -524,7 +528,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -545,7 +549,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.4;
+				MARKETING_VERSION = 0.1.5;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

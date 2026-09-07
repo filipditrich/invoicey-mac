@@ -27,6 +27,14 @@ public struct DriveClient: Sendable {
     }
   }
 
+  public func fetchLatestRelease() async throws -> DriveLatestRelease {
+    let url = try makeURL(path: "/api/drive/latest")
+    var request = URLRequest(url: url)
+    request.httpMethod = "GET"
+    let data = try await send(request)
+    return try DriveLatestRelease.parse(data)
+  }
+
   public func fetchIndex() async throws -> DriveIndex {
     let data = try await authorizedGET(path: "/api/drive/index")
     do {

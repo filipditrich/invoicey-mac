@@ -23,6 +23,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     Task {
       await status.syncNow(origin: "launch")
       await FileProviderDomainRegistration.sync(paired: (try? status.tokens.load()) != nil)
+      await status.checkForUpdates(force: false)
     }
   }
 
@@ -175,6 +176,16 @@ final class StatusItemController: NSObject {
       menu.addItem(connect)
     }
 
+    menu.addItem(.separator())
+
+    let updates = NSMenuItem(
+      title: "Check for Updates…",
+      action: #selector(checkForUpdatesClicked),
+      keyEquivalent: ""
+    )
+    updates.target = self
+    menu.addItem(updates)
+
     let quit = NSMenuItem(title: "Quit Invoicey Drive", action: #selector(quit), keyEquivalent: "q")
     quit.target = self
     menu.addItem(quit)
@@ -232,8 +243,80 @@ final class StatusItemController: NSObject {
     Task { await signOut() }
   }
 
+  @objc func checkForUpdatesClicked() {
+    Task { await checkForUpdates(force: true) }
+  }
+
   @objc func quit() {
     NSApp.terminate(nil)
+  }
+
+  func checkForUpdates(force: Bool) async {
+    do {
+      let updateStore = try UpdateCheckStore()
+      if !force {
+        let last = try updateStore.load().lastCheckedAt
+        guard AppUpdatePolicy.isAutomaticDue(lastCheckedAt: last, now: Date()) else {
+          return
+        }
+      }
+      let config = (try? configStore?.load()) ?? AppConfig()
+      let latest = try await DriveClient(baseURL: config.resolvedAPIURL).fetchLatestRelease()
+      try updateStore.markChecked()
+      let current =
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+      presentUpdate(
+        AppUpdatePolicy.outcome(current: current, latest: latest),
+        interactive: force
+      )
+    } catch {
+      if force {
+        present(error)
+      }
+    }
+  }
+
+  func presentUpdate(_ outcome: UpdateCheckOutcome, interactive: Bool) {
+    switch outcome {
+    case .available(let current, let latest):
+      presentAvailableUpdate(current: current, latest: latest)
+    case .upToDate(let current):
+      guard interactive else { return }
+      presentInfo(
+        title: "You’re up to date",
+        message: "Invoicey Drive \(current) is the latest version."
+      )
+    case .unknown:
+      guard interactive else { return }
+      presentInfo(
+        title: "Invoicey Drive",
+        message: "This build has no version number. Download the latest disk image from Invoicey."
+      )
+    }
+  }
+
+  func presentAvailableUpdate(current: String, latest: DriveLatestRelease) {
+    NSApp.activate()
+    let alert = NSAlert()
+    alert.messageText = "Invoicey Drive \(latest.version) is available"
+    alert.informativeText =
+      "You have \(current). Download the disk image and replace the app in Applications. Pairing stays."
+    alert.alertStyle = .informational
+    alert.addButton(withTitle: "Download")
+    alert.addButton(withTitle: "Later")
+    guard alert.runModal() == .alertFirstButtonReturn, let url = latest.downloadURL else {
+      return
+    }
+    _ = NSWorkspace.shared.open(url)
+  }
+
+  func presentInfo(title: String, message: String) {
+    NSApp.activate()
+    let alert = NSAlert()
+    alert.messageText = title
+    alert.informativeText = message
+    alert.alertStyle = .informational
+    alert.runModal()
   }
 
   func pair() async {
