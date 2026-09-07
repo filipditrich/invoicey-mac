@@ -28,6 +28,7 @@ let package = Package(
       path: "Sources/FileProvider",
       exclude: [
         "README.md",
+        "Info.plist",
         "InvoiceyDrive.entitlements",
         "InvoiceyDriveFileProvider.entitlements",
       ],
@@ -52,6 +53,7 @@ let package = Package(
       ],
       linkerSettings: [
         .linkedFramework("AppKit"),
+        .linkedFramework("FileProvider"),
         .linkedFramework("ServiceManagement"),
       ]
     ),

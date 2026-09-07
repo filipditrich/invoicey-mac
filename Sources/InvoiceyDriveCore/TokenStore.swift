@@ -26,6 +26,14 @@ public struct TokenStore: Sendable {
     self.allowDebugFileFallback = allowDebugFileFallback
   }
 
+  /// Keychain item the File Provider appex can read via the shared access group.
+  public static func appGroup(allowDebugFileFallback: Bool = true) -> TokenStore {
+    TokenStore(
+      accessGroup: DriveConstants.keychainAccessGroup,
+      allowDebugFileFallback: allowDebugFileFallback
+    )
+  }
+
   public func load() throws -> StoredToken? {
     if let token = loadKeychain() {
       return StoredToken(value: token, source: .keychain)
@@ -106,7 +114,7 @@ public struct TokenStore: Sendable {
   }
 
   func debugFileURL() throws -> URL {
-    try DriveConstants.applicationSupportDirectory()
+    try DriveConstants.sharedSupportDirectory()
       .appendingPathComponent("debug-token", isDirectory: false)
   }
 

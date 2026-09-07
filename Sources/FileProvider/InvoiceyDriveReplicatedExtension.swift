@@ -14,8 +14,7 @@ public final class InvoiceyDriveReplicatedExtension: NSObject, NSFileProviderRep
   var client: DriveClient
 
   public required init(domain: NSFileProviderDomain) {
-    let group = "group.me.ditrich.invoicey.drive"
-    self.tokens = TokenStore(accessGroup: group, allowDebugFileFallback: true)
+    self.tokens = TokenStore.appGroup(allowDebugFileFallback: true)
     if let store = try? AppConfigStore() {
       self.configStore = store
     } else {

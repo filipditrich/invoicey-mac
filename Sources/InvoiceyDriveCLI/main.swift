@@ -138,7 +138,7 @@ struct InvoiceyDriveCLI {
     http://127.0.0.1:<port>/oauth. Do not paste a PAT.
 
     Default API: INVOICEY_DRIVE_API_URL or http://localhost:3000
-    Production:  https://invoicey.ditrich.me
+    Production:  https://invoicey.app
     Config:      ~/Library/Application Support/Invoicey Drive/config.json
     Default mirror: ~/Invoicey Drive
     """

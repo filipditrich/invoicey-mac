@@ -2,6 +2,104 @@ import Foundation
 import InvoiceyDriveCore
 import Testing
 
+struct PairingCallbackTests {
+  @Test func readsCodeFromCustomSchemeAndAssociatedDomain() throws {
+    #expect(
+      try PairingCallback.authorizationCode(
+        from: URL(string: "invoicey-drive://oauth?code=abc")!
+      ) == "abc"
+    )
+    #expect(
+      try PairingCallback.authorizationCode(
+        from: URL(string: "https://invoicey.app/drive/oauth?code=from-aasa")!
+      ) == "from-aasa"
+    )
+    #expect(
+      try PairingCallback.authorizationCode(
+        from: URL(string: "http://127.0.0.1:54321/oauth?code=loop")!
+      ) == "loop"
+    )
+  }
+
+  @Test func ignoresUnrelatedURLs() throws {
+    #expect(
+      try PairingCallback.authorizationCode(
+        from: URL(string: "https://invoicey.app/drive/connect?challenge=x")!
+      ) == nil
+    )
+  }
+
+  @Test func surfacesProviderErrorAndMissingCode() {
+    #expect(throws: DriveError.pairingFailed("access_denied")) {
+      try PairingCallback.authorizationCode(
+        from: URL(string: "https://invoicey.app/drive/oauth?error=access_denied")!
+      )
+    }
+    #expect(throws: DriveError.missingAuthorizationCode) {
+      try PairingCallback.authorizationCode(
+        from: URL(string: "invoicey-drive://oauth")!
+      )
+    }
+  }
+
+  @Test func parsesLoopbackHTTPRequest() throws {
+    let request = "GET /oauth?code=http-code HTTP/1.1\r\nHost: 127.0.0.1\r\n\r\n"
+    #expect(try PairingCallback.parseHTTPRequest(request) == "http-code")
+    #expect(try PairingCallback.parseHTTPRequest("GET /not-oauth HTTP/1.1\r\n") == nil)
+  }
+}
+
+struct DriveConstantsTests {
+  @Test func productionAPIIsCanonicalHost() {
+    #expect(DriveConstants.productionAPIURL.absoluteString == "https://invoicey.app")
+    #expect(DriveConstants.teamId == "72T6DX5YZU")
+    #expect(DriveConstants.fileProviderBundleId == "me.ditrich.invoicey.drive.provider")
+  }
+
+  @Test func bundledRedirectUsesAssociatedDomainsOnlyOnKnownHosts() {
+    let bundle = DriveConstants.bundleId
+    #expect(
+      DriveConstants.bundledRedirectURI(
+        for: URL(string: "https://invoicey.app")!,
+        bundleIdentifier: bundle
+      ) == DriveConstants.associatedDomainRedirect
+    )
+    #expect(
+      DriveConstants.bundledRedirectURI(
+        for: URL(string: "https://invoicey.ditrich.me")!,
+        bundleIdentifier: bundle
+      )?.absoluteString == "https://invoicey.ditrich.me/drive/oauth"
+    )
+    #expect(
+      DriveConstants.bundledRedirectURI(
+        for: URL(string: "http://localhost:3000")!,
+        bundleIdentifier: bundle
+      ) == nil
+    )
+    #expect(
+      DriveConstants.bundledRedirectURI(
+        for: URL(string: "https://invoicey.app")!,
+        bundleIdentifier: "com.example.other"
+      ) == nil
+    )
+  }
+
+  @Test func unsignedToolsDefaultToLocalhost() {
+    #expect(
+      DriveConstants.defaultAPIURLFromEnvironment(
+        bundleIdentifier: "com.example.tests",
+        environment: [:]
+      ) == DriveConstants.defaultAPIURL
+    )
+    #expect(
+      DriveConstants.defaultAPIURLFromEnvironment(
+        bundleIdentifier: DriveConstants.bundleId,
+        environment: [:]
+      ) == DriveConstants.productionAPIURL
+    )
+  }
+}
+
 struct PKCETests {
   @Test func rfc7636S256Vector() throws {
     let verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"

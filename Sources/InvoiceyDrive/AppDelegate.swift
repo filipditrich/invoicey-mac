@@ -20,7 +20,29 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       }
     }
     status.startPolling()
-    Task { await status.syncNow(origin: "launch") }
+    Task {
+      await status.syncNow(origin: "launch")
+      await FileProviderDomainRegistration.sync(paired: (try? status.tokens.load()) != nil)
+    }
+  }
+
+  func application(_ application: NSApplication, open urls: [URL]) {
+    for url in urls {
+      PairingMailbox.shared.deliver(url)
+    }
+  }
+
+  func application(
+    _ application: NSApplication,
+    continue userActivity: NSUserActivity,
+    restorationHandler: @escaping ([any NSUserActivityRestoring]) -> Void
+  ) -> Bool {
+    guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+      let url = userActivity.webpageURL
+    else {
+      return false
+    }
+    return PairingMailbox.shared.deliver(url)
   }
 
   func registerLoginItemIfBundled() {
@@ -39,7 +61,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 @MainActor
 final class StatusItemController: NSObject {
   let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-  let tokens = TokenStore()
+  let tokens = TokenStore.appGroup()
   var configStore: AppConfigStore?
   var pollTimer: Timer?
   var lastStatusLine = "Connect Invoicey"
@@ -219,10 +241,14 @@ final class StatusItemController: NSObject {
     do {
       let store = try store()
       let config = try store.load()
-      let result = try await PairingFlow.run(apiURL: config.resolvedAPIURL)
+      let result = try await PairingFlow.run(
+        apiURL: config.resolvedAPIURL,
+        redirectURI: DriveConstants.bundledRedirectURI(for: config.resolvedAPIURL)
+      )
       try PairingFlow.persist(result, tokens: tokens, config: store)
       lastStatusLine = "Connected"
       rebuildMenu()
+      await FileProviderDomainRegistration.sync(paired: true)
       await syncNow(origin: "pair")
     } catch {
       lastStatusLine = "Connect Invoicey"
@@ -288,6 +314,7 @@ final class StatusItemController: NSObject {
       let stored = try tokens.load()
       let client = DriveClient(baseURL: config.resolvedAPIURL, token: stored?.value)
       try await DriveSession.signOut(client: client, tokens: tokens, config: store)
+      await FileProviderDomainRegistration.sync(paired: false)
       lastCounts = MirrorSyncResult()
       lastStatusLine = "Connect Invoicey"
       applyStatusAppearance()

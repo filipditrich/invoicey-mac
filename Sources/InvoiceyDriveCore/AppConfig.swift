@@ -47,7 +47,7 @@ public struct AppConfigStore: Sendable {
   }
 
   public init() throws {
-    self.url = try DriveConstants.applicationSupportDirectory()
+    self.url = try DriveConstants.sharedSupportDirectory()
       .appendingPathComponent("config.json", isDirectory: false)
   }
 

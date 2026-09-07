@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://invoicey.ditrich.me">
+  <a href="https://invoicey.app">
     <img src="docs/assets/brand/invoicey-lockup-on-light.svg" width="240" height="64" alt="Invoicey"/>
   </a>
 </p>
@@ -15,20 +15,30 @@
 </p>
 
 <p align="center">
-  <a href="https://invoicey.ditrich.me"><img src="https://img.shields.io/badge/product-invoicey.ditrich.me-f97316?style=for-the-badge" alt="Open Invoicey"/></a>
-  <a href="https://invoicey.ditrich.me/docs/integrations/invoicey-drive"><img src="https://img.shields.io/badge/docs-invoicey%20drive-18181b?style=for-the-badge" alt="Drive docs"/></a>
-  <a href="https://github.com/filipditrich/inveoiceyai"><img src="https://img.shields.io/badge/sibling-inveoiceyai-f97316?style=for-the-badge" alt="Invoicey turborepo"/></a>
-  <img src="https://img.shields.io/badge/macos-14%2B-18181b?style=for-the-badge" alt="macOS 14+"/>
+  <a href="https://github.com/filipditrich/invoicey-mac/releases/latest/download/InvoiceyDrive.dmg"><img src="https://img.shields.io/badge/download-InvoiceyDrive.dmg-914522?style=for-the-badge" alt="Download Invoicey Drive"/></a>
+  <a href="https://invoicey.app"><img src="https://img.shields.io/badge/product-invoicey.app-914522?style=for-the-badge" alt="Open Invoicey"/></a>
+  <a href="https://invoicey.app/docs/integrations/invoicey-drive"><img src="https://img.shields.io/badge/docs-invoicey%20drive-2A1810?style=for-the-badge" alt="Drive docs"/></a>
+  <a href="https://github.com/filipditrich/inveoiceyai"><img src="https://img.shields.io/badge/sibling-inveoiceyai-C4784A?style=for-the-badge" alt="Invoicey turborepo"/></a>
+  <img src="https://img.shields.io/badge/macos-14%2B-2A1810?style=for-the-badge" alt="macOS 14+"/>
 </p>
 
 <p align="center">
+  <a href="#install">Install</a> ·
   <a href="#how-it-works">How it works</a> ·
   <a href="#what-you-get">What you get</a> ·
   <a href="#pair-this-mac">Pair this Mac</a> ·
   <a href="#documentation">Docs</a> ·
-  <a href="https://invoicey.ditrich.me/brand">Brand</a> ·
+  <a href="https://invoicey.app/brand">Brand</a> ·
   <a href="#license">License</a>
 </p>
+
+---
+
+## Install
+
+Download the notarized [InvoiceyDrive.dmg](https://github.com/filipditrich/invoicey-mac/releases/latest/download/InvoiceyDrive.dmg), drag **Invoicey Drive** into Applications, then open it from there. Pairing starts in the Mac app. Settings on Invoicey lists devices and can revoke them.
+
+`swift run` is for local development (mirror folder only). Finder Locations needs the signed `.app`.
 
 ---
 
@@ -66,15 +76,15 @@ Layout comes from the server (`{year}/{kind}_{number}` by default). Identity is 
 | **Optional mirror** | iCloud, Proton Drive, or a local `_faktury` folder. Same relative paths as the index. |
 | **Pairing** | Starts in the Mac app (PKCE). Confirm **Connect this Mac** on Invoicey. Device token in Keychain. Not a Settings PAT. |
 | **Menu bar** | Invoicey I monogram. Tints red when anything is overdue, orange when unpaid. Overdue and unpaid counts in the menu. Sync now, open the mirror, sign out. Polls every 60s and on wake. |
-| **macOS 14+** | Distributed as a notarized `.dmg` when the Apple team exists. Not the Mac App Store. |
+| **macOS 14+** | Distributed as a notarized `.dmg`. Not the Mac App Store. |
 
-Finder Locations (a real **Invoicey Drive** domain next to Proton Drive) needs a paid Apple Developer team, an `.app` + File Provider `.appex`, and notarization. Until then, use the mirror folder.
+Finder Locations (a real **Invoicey Drive** domain next to Proton Drive) ships from `InvoiceyDrive.xcodeproj` (app `me.ditrich.invoicey.drive` + File Provider `me.ditrich.invoicey.drive.provider`, Team `72T6DX5YZU`). `swift run` is the mirror folder only.
 
 ---
 
 ## Pair this Mac
 
-1. Run Invoicey ([local](https://github.com/filipditrich/inveoiceyai#local-development) or [invoicey.ditrich.me](https://invoicey.ditrich.me)).
+1. Run Invoicey ([local](https://github.com/filipditrich/inveoiceyai#local-development) or [invoicey.app](https://invoicey.app)).
 2. From this repo: `swift run invoicey-drive pair` (or the menu bar extra).
 3. Sign in if needed. Click **Connect this Mac**.
 4. `swift run invoicey-drive sync` writes `~/Invoicey Drive` unless you already set a folder.
@@ -90,10 +100,10 @@ INVOICEY_DRIVE_API_URL=http://localhost:3000 swift run invoicey-drive pair
 INVOICEY_DRIVE_API_URL=http://localhost:3000 swift run invoicey-drive sync
 
 # production
-INVOICEY_DRIVE_API_URL=https://invoicey.ditrich.me swift run invoicey-drive pair
+INVOICEY_DRIVE_API_URL=https://invoicey.app swift run invoicey-drive pair
 ```
 
-Never paste a PAT. `swift run` uses a loopback callback (`http://127.0.0.1:<port>/oauth`). The custom scheme `invoicey-drive://oauth` is for a bundled `.app`.
+Never paste a PAT. `swift run` uses a loopback callback (`http://127.0.0.1:<port>/oauth`). The signed app uses Associated Domains (`https://invoicey.app/drive/oauth`) and `invoicey-drive://oauth`.
 
 ---
 
@@ -101,17 +111,17 @@ Never paste a PAT. `swift run` uses a loopback callback (`http://127.0.0.1:<port
 
 | Doc | What it covers |
 | --- | -------------- |
-| [Invoicey Drive guide](https://invoicey.ditrich.me/docs/integrations/invoicey-drive) | Install, tokens, iCloud vs Invoicey Drive |
-| [Invoicey brand](https://invoicey.ditrich.me/brand) | Compact mark and full wordmark |
+| [Invoicey Drive guide](https://invoicey.app/docs/integrations/invoicey-drive) | Install, tokens, iCloud vs Invoicey Drive |
+| [Invoicey brand](https://invoicey.app/brand) | Compact mark and full wordmark |
 | [Invoicey](https://github.com/filipditrich/inveoiceyai) | Product, web, MCP, Slack, Drive API |
-| [Account Settings](https://invoicey.ditrich.me/settings/account/drive) | Layout template, devices, download |
-| [`Sources/FileProvider/README.md`](Sources/FileProvider/README.md) | What the enumerator already encodes vs what Xcode still needs |
+| [Account Settings](https://invoicey.app/settings/account/drive) | Layout template, devices, download |
+| [`Sources/FileProvider/README.md`](Sources/FileProvider/README.md) | File Provider enumerator vs the signed Xcode project |
 
 ---
 
 ## Stack
 
-Swift 6 · macOS 14 · menu bar extra · CLI · File Provider sources (domain registration parked on a paid team). Bundle id `me.ditrich.invoicey.drive`.
+Swift 6 · macOS 14 · menu bar extra · CLI · File Provider appex (`InvoiceyDrive.xcodeproj`). Bundle id `me.ditrich.invoicey.drive`.
 
 <details>
 <summary>Repo map</summary>
@@ -129,7 +139,10 @@ Tests/InvoiceyDriveCoreTests/
 <details>
 <summary>Local development</summary>
 
-Contributor workflow. Production pairing talks to [invoicey.ditrich.me](https://invoicey.ditrich.me). Clone and run the web app from [`inveoiceyai`](https://github.com/filipditrich/inveoiceyai) when you need a local API.
+Contributor workflow. Production pairing talks to [invoicey.app](https://invoicey.app). Clone and run the web app from [`inveoiceyai`](https://github.com/filipditrich/inveoiceyai) when you need a local API. Open `InvoiceyDrive.xcodeproj` to run the signed app + Finder domain
+(`xcodegen generate` if you edit `project.yml`). Xcode → Settings → Accounts
+must include team `72T6DX5YZU`. Import the Developer ID identity from
+`~/.invoicey/apple/` into the login Keychain before Archive / notarize.
 
 ```bash
 swift test
@@ -159,7 +172,7 @@ Owned by Invoicey (`apps/web`). This repo is a client.
 | ISDOC | `GET {api}/api/drive/invoices/{id}/isdoc` |
 | Revoke | `POST {api}/api/drive/revoke` |
 
-Redirect allowlist (web): `invoicey-drive://oauth`, `http://127.0.0.1:*/oauth`, `http://localhost:*/oauth`.
+Redirect allowlist (web): `invoicey-drive://oauth`, `http://127.0.0.1:*/oauth`, `http://localhost:*/oauth`, `https://invoicey.app/drive/oauth`.
 
 </details>
 

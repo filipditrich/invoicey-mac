@@ -1,0 +1,92 @@
+name: InvoiceyDrive
+options:
+  bundleIdPrefix: me.ditrich.invoicey
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "14.0"
+  developmentLanguage: en
+settings:
+  base:
+    CURRENT_PROJECT_VERSION: 1
+    DEVELOPMENT_TEAM: 72T6DX5YZU
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+    MARKETING_VERSION: 0.1.0
+    SWIFT_STRICT_CONCURRENCY: complete
+    SWIFT_VERSION: "6.0"
+  configs:
+    Release:
+      CODE_SIGN_INJECT_BASE_ENTITLEMENTS: NO
+      ENABLE_HARDENED_RUNTIME: YES
+      OTHER_CODE_SIGN_FLAGS: "--timestamp"
+targets:
+  InvoiceyDriveCore:
+    type: library.static
+    platform: macOS
+    sources:
+      - path: Sources/InvoiceyDriveCore
+    settings:
+      base:
+        DEFINES_MODULE: YES
+        GENERATE_INFOPLIST_FILE: YES
+        PRODUCT_MODULE_NAME: InvoiceyDriveCore
+        PRODUCT_NAME: InvoiceyDriveCore
+        SKIP_INSTALL: YES
+  InvoiceyDrive:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources/InvoiceyDrive
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: Sources/FileProvider/InvoiceyDrive.entitlements
+        CODE_SIGN_STYLE: Automatic
+        COMBINE_HIDPI_IMAGES: YES
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Sources/InvoiceyDrive/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: me.ditrich.invoicey.drive
+        PRODUCT_NAME: Invoicey Drive
+      configs:
+        Release:
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          CODE_SIGN_STYLE: Manual
+          PROVISIONING_PROFILE_SPECIFIER: Invoicey Drive Developer ID
+    dependencies:
+      - target: InvoiceyDriveCore
+      - target: InvoiceyDriveProvider
+        embed: true
+        codeSign: true
+      - sdk: FileProvider.framework
+      - sdk: ServiceManagement.framework
+    scheme:
+      gatherCoverageData: false
+  InvoiceyDriveProvider:
+    type: app-extension
+    platform: macOS
+    sources:
+      - path: Sources/FileProvider
+        excludes:
+          - README.md
+          - Info.plist
+          - "*.entitlements"
+    settings:
+      base:
+        CODE_SIGN_ENTITLEMENTS: Sources/FileProvider/InvoiceyDriveFileProvider.entitlements
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Sources/FileProvider/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: me.ditrich.invoicey.drive.provider
+        PRODUCT_MODULE_NAME: InvoiceyDriveFileProvider
+        PRODUCT_NAME: InvoiceyDriveProvider
+        SKIP_INSTALL: YES
+      configs:
+        Release:
+          CODE_SIGN_IDENTITY: "Developer ID Application"
+          CODE_SIGN_STYLE: Manual
+          PROVISIONING_PROFILE_SPECIFIER: Invoicey Drive Provider Developer ID
+    dependencies:
+      - target: InvoiceyDriveCore
+      - sdk: FileProvider.framework
+      - sdk: UniformTypeIdentifiers.framework

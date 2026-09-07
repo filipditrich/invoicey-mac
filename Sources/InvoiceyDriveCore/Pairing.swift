@@ -36,18 +36,48 @@ public struct PairingResult: Sendable, Equatable {
 }
 
 public enum PairingFlow {
-  /// PKCE pair: local HTTP callback on 127.0.0.1, then POST /api/drive/token.
+  /// PKCE pair: loopback `/oauth`, or a bundled custom-scheme / Associated Domains callback.
   public static func run(
     apiURL: URL,
     deviceName: String = DeviceName.current(),
     timeout: Duration = DriveConstants.pairingTimeout,
-    openURL: (@Sendable (URL) throws -> Void)? = nil
+    openURL: (@Sendable (URL) throws -> Void)? = nil,
+    redirectURI: URL? = nil,
+    mailbox: PairingMailbox = .shared
   ) async throws -> PairingResult {
     let pkce = try PKCE.generate()
+    if let redirectURI {
+      mailbox.reset()
+      return try await complete(
+        apiURL: apiURL,
+        deviceName: deviceName,
+        pkce: pkce,
+        redirect: redirectURI,
+        openURL: openURL,
+        wait: { try await mailbox.waitForCode(timeout: timeout) }
+      )
+    }
     let server = OAuthCallbackServer()
     let redirect = try await server.start()
     defer { server.stop() }
+    return try await complete(
+      apiURL: apiURL,
+      deviceName: deviceName,
+      pkce: pkce,
+      redirect: redirect,
+      openURL: openURL,
+      wait: { try await server.waitForCode(timeout: timeout) }
+    )
+  }
 
+  static func complete(
+    apiURL: URL,
+    deviceName: String,
+    pkce: PKCE,
+    redirect: URL,
+    openURL: (@Sendable (URL) throws -> Void)?,
+    wait: () async throws -> String
+  ) async throws -> PairingResult {
     let client = DriveClient(baseURL: apiURL)
     let connect = try client.connectURL(
       challenge: pkce.challenge,
@@ -59,14 +89,12 @@ public enum PairingFlow {
     } else {
       try Browser.open(connect)
     }
-
     let code: String
     do {
-      code = try await server.waitForCode(timeout: timeout)
+      code = try await wait()
     } catch is CancellationError {
       throw DriveError.pairingTimeout
     }
-
     let token = try await client.exchanging(
       code: code,
       verifier: pkce.verifier,
@@ -207,7 +235,7 @@ final class OAuthCallbackServer: @unchecked Sendable {
         return
       }
       do {
-        guard let code = try Self.parseCode(from: request) else {
+        guard let code = try PairingCallback.parseHTTPRequest(request) else {
           self.respond(connection, status: 404, body: Self.html("Not found."))
           return
         }
@@ -276,31 +304,6 @@ final class OAuthCallbackServer: @unchecked Sendable {
     )
   }
 
-  static func parseCode(from request: String) throws -> String? {
-    let firstLine = request.split(separator: "\r\n", maxSplits: 1, omittingEmptySubsequences: false)
-      .first.map(String.init) ?? request
-    let parts = firstLine.split(separator: " ")
-    guard parts.count >= 2 else {
-      return nil
-    }
-    guard let url = URL(string: "http://127.0.0.1\(parts[1])") else {
-      return nil
-    }
-    let path = url.path
-    if path != "/oauth" && path != "/oauth/" {
-      return nil
-    }
-    let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
-    if let error = components?.queryItems?.first(where: { $0.name == "error" })?.value {
-      throw DriveError.pairingFailed(error)
-    }
-    guard let code = components?.queryItems?.first(where: { $0.name == "code" })?.value,
-      !code.isEmpty
-    else {
-      throw DriveError.missingAuthorizationCode
-    }
-    return code
-  }
 
   static func html(_ message: String) -> String {
     """
