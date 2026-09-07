@@ -1,3 +1,4 @@
+import Darwin
 import Foundation
 
 public enum DriveConstants: Sendable {
@@ -78,8 +79,33 @@ public enum DriveConstants: Sendable {
     return try applicationSupportDirectory()
   }
 
-  public static func defaultMirrorDirectory() -> URL {
-    FileManager.default.homeDirectoryForCurrentUser
-      .appendingPathComponent(defaultMirrorFolderName, isDirectory: true)
+  /// Login-user home, not the App Sandbox container (`…/Library/Containers/…/Data`).
+  public static func realHomeDirectory(
+    passwdHome: String? = nil,
+    fallback: URL = FileManager.default.homeDirectoryForCurrentUser
+  ) -> URL {
+    let home = passwdHome ?? livePasswdHome()
+    if let home, !home.isEmpty {
+      return URL(fileURLWithPath: home, isDirectory: true)
+    }
+    return fallback
+  }
+
+  static func livePasswdHome() -> String? {
+    guard let pw = getpwuid(geteuid()), let dir = pw.pointee.pw_dir else {
+      return nil
+    }
+    let path = String(cString: dir)
+    return path.isEmpty ? nil : path
+  }
+
+  public static func isSandboxContainerPath(_ path: String) -> Bool {
+    path.contains("/Library/Containers/")
+  }
+
+  public static func defaultMirrorDirectory(
+    home: URL = realHomeDirectory()
+  ) -> URL {
+    home.appendingPathComponent(defaultMirrorFolderName, isDirectory: true)
   }
 }

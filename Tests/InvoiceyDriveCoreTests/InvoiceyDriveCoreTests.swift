@@ -92,6 +92,28 @@ struct DriveConstantsTests {
     )
   }
 
+  @Test func defaultMirrorUsesLoginHomeNotSandboxContainer() {
+    let container = URL(
+      fileURLWithPath: "/Users/filip/Library/Containers/me.ditrich.invoicey.drive/Data",
+      isDirectory: true
+    )
+    let home = DriveConstants.realHomeDirectory(
+      passwdHome: "/Users/filip",
+      fallback: container
+    )
+    #expect(home.path == "/Users/filip")
+    #expect(
+      DriveConstants.defaultMirrorDirectory(home: home).path == "/Users/filip/Invoicey Drive"
+    )
+    #expect(DriveConstants.isSandboxContainerPath(container.path))
+    #expect(
+      !DriveConstants.isSandboxContainerPath("/Users/filip/Invoicey Drive")
+    )
+    let leaked = AppConfig(mirrorPath: container.appendingPathComponent("Invoicey Drive").path)
+    #expect(!DriveConstants.isSandboxContainerPath(leaked.resolvedMirrorURL.path))
+    #expect(leaked.resolvedMirrorURL.lastPathComponent == "Invoicey Drive")
+  }
+
   @Test func unsignedToolsDefaultToLocalhost() {
     #expect(
       DriveConstants.defaultAPIURLFromEnvironment(

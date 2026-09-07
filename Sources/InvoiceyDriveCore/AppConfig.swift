@@ -32,7 +32,9 @@ public struct AppConfig: Codable, Sendable, Equatable {
   }
 
   public var resolvedMirrorURL: URL {
-    if let mirrorPath, !mirrorPath.isEmpty {
+    if let mirrorPath, !mirrorPath.isEmpty,
+      !DriveConstants.isSandboxContainerPath(mirrorPath)
+    {
       return URL(fileURLWithPath: (mirrorPath as NSString).expandingTildeInPath)
     }
     return DriveConstants.defaultMirrorDirectory()

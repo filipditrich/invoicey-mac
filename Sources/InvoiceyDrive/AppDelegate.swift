@@ -205,6 +205,7 @@ final class StatusItemController: NSObject {
     panel.allowsMultipleSelection = false
     panel.prompt = "Set mirror"
     panel.message = "Invoicey Drive writes workspace/issuer PDFs here. Drop-ins are ignored."
+    panel.directoryURL = DriveConstants.defaultMirrorDirectory()
     panel.begin { [weak self] response in
       guard response == .OK, let url = panel.url else { return }
       Task { @MainActor in
@@ -360,7 +361,7 @@ final class StatusItemController: NSObject {
   }
 
   static func displayPath(_ path: String) -> String {
-    let home = FileManager.default.homeDirectoryForCurrentUser.path
+    let home = DriveConstants.realHomeDirectory().path
     if path.hasPrefix(home) {
       return "~" + path.dropFirst(home.count)
     }
