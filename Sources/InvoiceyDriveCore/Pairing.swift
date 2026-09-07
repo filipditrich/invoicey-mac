@@ -15,7 +15,18 @@ public enum DeviceName {
 }
 
 public enum Browser {
+  /// True inside an App Sandbox container. `/usr/bin/open` is then blocked.
+  public static func isSandboxed(
+    environment: [String: String] = ProcessInfo.processInfo.environment
+  ) -> Bool {
+    environment["APP_SANDBOX_CONTAINER_ID"] != nil
+  }
+
+  /// CLI / `swift run` opener. The sandboxed menu-bar app must inject `NSWorkspace`.
   public static func open(_ url: URL) throws {
+    if isSandboxed() {
+      throw DriveError.pairingFailed("Could not open Invoicey in the browser.")
+    }
     let process = Process()
     process.executableURL = URL(fileURLWithPath: "/usr/bin/open")
     process.arguments = [url.absoluteString]

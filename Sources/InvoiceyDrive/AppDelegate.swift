@@ -243,6 +243,7 @@ final class StatusItemController: NSObject {
       let config = try store.load()
       let result = try await PairingFlow.run(
         apiURL: config.resolvedAPIURL,
+        openURL: ConnectPageOpener.open,
         redirectURI: DriveConstants.bundledRedirectURI(for: config.resolvedAPIURL)
       )
       try PairingFlow.persist(result, tokens: tokens, config: store)
@@ -350,6 +351,7 @@ final class StatusItemController: NSObject {
   }
 
   func present(_ error: Error) {
+    NSApp.activate()
     let alert = NSAlert()
     alert.messageText = "Invoicey Drive"
     alert.informativeText = error.localizedDescription
@@ -363,5 +365,14 @@ final class StatusItemController: NSObject {
       return "~" + path.dropFirst(home.count)
     }
     return path
+  }
+}
+
+/// Sandbox blocks `/usr/bin/open`; workspace is the entitled path.
+enum ConnectPageOpener: Sendable {
+  static func open(_ url: URL) throws {
+    guard NSWorkspace.shared.open(url) else {
+      throw DriveError.pairingFailed("Could not open Invoicey in the browser.")
+    }
   }
 }

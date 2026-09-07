@@ -49,6 +49,14 @@ struct PairingCallbackTests {
   }
 }
 
+struct PairingFlowTests {
+  @Test func sandboxBlocksProcessOpener() {
+    #expect(Browser.isSandboxed(environment: ["APP_SANDBOX_CONTAINER_ID": "container"]))
+    #expect(!Browser.isSandboxed(environment: [:]))
+  }
+
+}
+
 struct DriveConstantsTests {
   @Test func productionAPIIsCanonicalHost() {
     #expect(DriveConstants.productionAPIURL.absoluteString == "https://invoicey.app")
