@@ -22,8 +22,10 @@
 		427BDDAEC0776097495BBAD8 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2302743EC122FAD0B9F01BC4 /* UniformTypeIdentifiers.framework */; };
 		55AA207D6C58B29116EB3239 /* libInvoiceyDriveCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921F3DD7D70D46FDD728EA /* libInvoiceyDriveCore.a */; };
 		858AEC7FEC745BBD41BBD0D5 /* MirrorSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */; };
+		93014F5F5BF0BCC273879417 /* InvoiceyDrive.icns in Resources */ = {isa = PBXBuildFile; fileRef = C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */; };
 		94611258C3921ACF4029AE38 /* StatusMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */; };
 		9959EE637421EDFB94B2204C /* FileProvider.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29F1C52797AEC6F0C837671A /* FileProvider.framework */; };
+		9A3124AE7B23CD9DFE68C5EB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CBBA1334719EBDA0EBFC790 /* Assets.xcassets */; };
 		9BD670B33158BE1D3B4D7965 /* DriveSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0051B8A759A2D5B0EFF5838E /* DriveSession.swift */; };
 		A5659A1A696F79228BB5CF33 /* PairingMailbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB16B03B05E559A9161F038B /* PairingMailbox.swift */; };
 		B1897B507677EC64BADABDFA /* SHA256File.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E9D69377E4590E3E7715651 /* SHA256File.swift */; };
@@ -85,6 +87,7 @@
 		2302743EC122FAD0B9F01BC4 /* UniformTypeIdentifiers.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UniformTypeIdentifiers.framework; path = System/Library/Frameworks/UniformTypeIdentifiers.framework; sourceTree = SDKROOT; };
 		23D3702812FF70BF9FE0397B /* FileProviderDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderDomain.swift; sourceTree = "<group>"; };
 		29F1C52797AEC6F0C837671A /* FileProvider.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileProvider.framework; path = System/Library/Frameworks/FileProvider.framework; sourceTree = SDKROOT; };
+		2CBBA1334719EBDA0EBFC790 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		375418CDEB711F155B4FF58D /* PairingCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingCallback.swift; sourceTree = "<group>"; };
 		3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorSync.swift; sourceTree = "<group>"; };
 		42610A3064D0329456746C2C /* Pairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pairing.swift; sourceTree = "<group>"; };
@@ -102,6 +105,7 @@
 		AD921F3DD7D70D46FDD728EA /* libInvoiceyDriveCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libInvoiceyDriveCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		BC72A34F277E4710F423C45A /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderStatusLabel.swift; sourceTree = "<group>"; };
+		C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = InvoiceyDrive.icns; sourceTree = "<group>"; };
 		D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveConstants.swift; sourceTree = "<group>"; };
 		E442320D51E786B076F64577 /* DrivePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivePaths.swift; sourceTree = "<group>"; };
 		EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMark.swift; sourceTree = "<group>"; };
@@ -159,8 +163,10 @@
 			children = (
 				0EBFBB1F85BD9237D73B9906 /* AppDelegate.swift */,
 				87762CDB9B0C53A5247CE51F /* AppMain.swift */,
+				2CBBA1334719EBDA0EBFC790 /* Assets.xcassets */,
 				23D3702812FF70BF9FE0397B /* FileProviderDomain.swift */,
 				EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */,
+				A8B51F66A9F65D9EB742DC38 /* Resources */,
 			);
 			path = InvoiceyDrive;
 			sourceTree = "<group>";
@@ -181,6 +187,14 @@
 				FBD92C1CA4213D9B02E630B1 /* Frameworks */,
 				DA19863A770B9B1EB5C18720 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		A8B51F66A9F65D9EB742DC38 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		B9DCDA461B0FFADC95AFDB5E /* Sources */ = {
@@ -221,6 +235,7 @@
 			buildConfigurationList = 1E2FDABD4F329E30024FB7DD /* Build configuration list for PBXNativeTarget "InvoiceyDrive" */;
 			buildPhases = (
 				00EF504BD6B3A437EE58A63A /* Sources */,
+				B84BC580A10861DEEFA4C3AB /* Resources */,
 				B6E77B2566AAB41946B80A48 /* Frameworks */,
 				9220DAD4CEC793ADEEC94BAB /* Embed Foundation Extensions */,
 			);
@@ -314,6 +329,18 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B84BC580A10861DEEFA4C3AB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9A3124AE7B23CD9DFE68C5EB /* Assets.xcassets in Resources */,
+				93014F5F5BF0BCC273879417 /* InvoiceyDrive.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
 		960BD7935F7E618E59C80DE7 /* Copy Swift Objective-C Interface Header */ = {
@@ -434,7 +461,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -450,7 +477,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
@@ -497,7 +524,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -518,7 +545,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

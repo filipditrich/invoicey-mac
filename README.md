@@ -143,6 +143,9 @@ Contributor workflow. Production pairing talks to [invoicey.app](https://invoice
 (`xcodegen generate` if you edit `project.yml`). Xcode → Settings → Accounts
 must include team `72T6DX5YZU`. Import the Developer ID identity from
 `~/.invoicey/apple/` into the login Keychain before Archive / notarize.
+`scripts/render-brand-icons.sh` rebuilds the App Icon and DMG background from
+`docs/assets/brand`. `scripts/package-dmg.sh` lays out the drag-to-Applications
+disk image.
 
 ```bash
 swift test

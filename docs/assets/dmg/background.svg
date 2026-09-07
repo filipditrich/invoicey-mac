@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="880" viewBox="0 0 660 440" role="img" aria-label="Invoicey Drive installer">
+  <rect width="660" height="440" fill="#F4EFE7"/>
+  <rect x="0" y="0" width="660" height="1" fill="#E6DFD4"/>
+  <text x="330" y="92" text-anchor="middle" fill="#6B645C" font-family="ui-sans-serif, -apple-system, system-ui, sans-serif" font-size="12">Drag to Applications to install</text>
+  <!-- arrow between the two icon slots -->
+  <path d="M268 210 H392" fill="none" stroke="#C4B8A8" stroke-width="2" stroke-linecap="round"/>
+  <path d="M380 200 L396 210 L380 220" fill="none" stroke="#C4B8A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
