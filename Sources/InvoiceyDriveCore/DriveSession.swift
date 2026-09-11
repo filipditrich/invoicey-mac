@@ -25,6 +25,14 @@ public enum DriveSession {
     }
   }
 
+  /// Drop a rejected local session without calling revoke (token already dead).
+  public static func forgetLocalSession(tokens: TokenStore, config: AppConfigStore) throws {
+    try tokens.delete()
+    try config.update { current in
+      current.deviceId = nil
+    }
+  }
+
   public static func makeClient(config: AppConfig, tokens: TokenStore) throws -> DriveClient {
     let stored = try tokens.load()
     return DriveClient(baseURL: config.resolvedAPIURL, token: stored?.value)

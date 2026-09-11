@@ -19,8 +19,10 @@
 		347AFD00A5108141B19FF26E /* DriveConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */; };
 		37FEEB66D4A43F05899CD207 /* PKCE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AD3A2E20CD59DB797A4EE48 /* PKCE.swift */; };
 		4151CD5A04B3A79461A63E7D /* FinderStatusLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */; };
+		4277313B1A68B5ACC04F05BF /* DriveMenuCopy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A44924222ACD2C1F1C80EA /* DriveMenuCopy.swift */; };
 		427BDDAEC0776097495BBAD8 /* UniformTypeIdentifiers.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2302743EC122FAD0B9F01BC4 /* UniformTypeIdentifiers.framework */; };
 		55AA207D6C58B29116EB3239 /* libInvoiceyDriveCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AD921F3DD7D70D46FDD728EA /* libInvoiceyDriveCore.a */; };
+		609C0AC3E77B24427D5D6A71 /* FileProviderDomainPolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = E047DBA2AE84ED77BDFC1BD1 /* FileProviderDomainPolicy.swift */; };
 		858AEC7FEC745BBD41BBD0D5 /* MirrorSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */; };
 		93014F5F5BF0BCC273879417 /* InvoiceyDrive.icns in Resources */ = {isa = PBXBuildFile; fileRef = C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */; };
 		94611258C3921ACF4029AE38 /* StatusMark.swift in Sources */ = {isa = PBXBuildFile; fileRef = EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */; };
@@ -89,6 +91,7 @@
 		23D3702812FF70BF9FE0397B /* FileProviderDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderDomain.swift; sourceTree = "<group>"; };
 		29F1C52797AEC6F0C837671A /* FileProvider.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FileProvider.framework; path = System/Library/Frameworks/FileProvider.framework; sourceTree = SDKROOT; };
 		2CBBA1334719EBDA0EBFC790 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		33A44924222ACD2C1F1C80EA /* DriveMenuCopy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveMenuCopy.swift; sourceTree = "<group>"; };
 		375418CDEB711F155B4FF58D /* PairingCallback.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingCallback.swift; sourceTree = "<group>"; };
 		3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MirrorSync.swift; sourceTree = "<group>"; };
 		42610A3064D0329456746C2C /* Pairing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pairing.swift; sourceTree = "<group>"; };
@@ -109,6 +112,7 @@
 		C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = InvoiceyDrive.icns; sourceTree = "<group>"; };
 		D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriveConstants.swift; sourceTree = "<group>"; };
 		D579E568FD5B03F96DCCEEEF /* AppUpdate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdate.swift; sourceTree = "<group>"; };
+		E047DBA2AE84ED77BDFC1BD1 /* FileProviderDomainPolicy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderDomainPolicy.swift; sourceTree = "<group>"; };
 		E442320D51E786B076F64577 /* DrivePaths.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrivePaths.swift; sourceTree = "<group>"; };
 		EB1628A6A1F710DB5FFC9881 /* StatusMark.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusMark.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -145,9 +149,11 @@
 				21FB2F72D2E949C7278C1A97 /* DriveClient.swift */,
 				D0BC5175C8F34F8A56154F93 /* DriveConstants.swift */,
 				45AB63353296D8E195AF00EA /* DriveError.swift */,
+				33A44924222ACD2C1F1C80EA /* DriveMenuCopy.swift */,
 				E442320D51E786B076F64577 /* DrivePaths.swift */,
 				0051B8A759A2D5B0EFF5838E /* DriveSession.swift */,
 				84ACC52CFA65C350C1B64FB3 /* DriveTree.swift */,
+				E047DBA2AE84ED77BDFC1BD1 /* FileProviderDomainPolicy.swift */,
 				C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */,
 				3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */,
 				BC72A34F277E4710F423C45A /* Models.swift */,
@@ -385,9 +391,11 @@
 				B60694B6737C4F402B702C7C /* DriveClient.swift in Sources */,
 				347AFD00A5108141B19FF26E /* DriveConstants.swift in Sources */,
 				22E9D3375260C8897EDB1FDA /* DriveError.swift in Sources */,
+				4277313B1A68B5ACC04F05BF /* DriveMenuCopy.swift in Sources */,
 				19C5A13DF38CF3F4C3E0B9FB /* DrivePaths.swift in Sources */,
 				9BD670B33158BE1D3B4D7965 /* DriveSession.swift in Sources */,
 				F1260609EDCD1D8188F24995 /* DriveTree.swift in Sources */,
+				609C0AC3E77B24427D5D6A71 /* FileProviderDomainPolicy.swift in Sources */,
 				4151CD5A04B3A79461A63E7D /* FinderStatusLabel.swift in Sources */,
 				858AEC7FEC745BBD41BBD0D5 /* MirrorSync.swift in Sources */,
 				1737367BB086DA4F05FDD686 /* Models.swift in Sources */,
@@ -465,7 +473,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -481,7 +489,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.5;
+				MARKETING_VERSION = 0.1.6;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
@@ -528,7 +536,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 5;
+				CURRENT_PROJECT_VERSION = 6;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -549,7 +557,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.5;
+				MARKETING_VERSION = 0.1.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

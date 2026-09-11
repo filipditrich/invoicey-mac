@@ -38,6 +38,11 @@ public struct TokenStore: Sendable {
     if let token = loadKeychain() {
       return StoredToken(value: token, source: .keychain)
     }
+    /** migrate a pre-group keychain item into the shared access group */
+    if accessGroup != nil, let token = loadKeychain(includeAccessGroup: false) {
+      _ = saveKeychain(token)
+      return StoredToken(value: token, source: .keychain)
+    }
     if allowDebugFileFallback, let token = try loadDebugFile() {
       return StoredToken(value: token, source: .debugFile)
     }
@@ -66,7 +71,7 @@ public struct TokenStore: Sendable {
     try deleteDebugFile()
   }
 
-  func loadKeychain() -> String? {
+  func loadKeychain(includeAccessGroup: Bool = true) -> String? {
     var query: [String: Any] = [
       kSecClass as String: kSecClassGenericPassword,
       kSecAttrService as String: DriveConstants.keychainService,
@@ -74,7 +79,7 @@ public struct TokenStore: Sendable {
       kSecReturnData as String: true,
       kSecMatchLimit as String: kSecMatchLimitOne,
     ]
-    if let accessGroup {
+    if includeAccessGroup, let accessGroup {
       query[kSecAttrAccessGroup as String] = accessGroup
     }
     var result: AnyObject?

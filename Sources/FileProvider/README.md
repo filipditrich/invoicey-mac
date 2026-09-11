@@ -15,8 +15,10 @@ import InvoiceyDriveCore
 /// 2. File Provider extension `me.ditrich.invoicey.drive.provider` whose principal
 ///    class is `InvoiceyDriveReplicatedExtension`.
 ///    Entitlement `com.apple.fileprovider-nonui`.
-/// 3. The bundled app registers the domain after pair
-///    (`NSFileProviderDomain` identifier `me.ditrich.invoicey.drive`).
+/// 3. The bundled app registers the domain after pair via
+///    `NSFileProviderManager.domains()` + `add` (do not treat
+///    `NSFileProviderManager(for:)` as proof the domain exists).
+///    Identifier `me.ditrich.invoicey.drive`.
 ///
 /// `swift run InvoiceyDrive` still uses the mirror folder only — it cannot embed
 /// an appex.

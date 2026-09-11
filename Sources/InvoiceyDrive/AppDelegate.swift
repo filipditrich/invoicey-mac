@@ -22,7 +22,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     status.startPolling()
     Task {
       await status.syncNow(origin: "launch")
-      await FileProviderDomainRegistration.sync(paired: (try? status.tokens.load()) != nil)
+      await status.syncFileProviderDomain()
       await status.checkForUpdates(force: false)
     }
   }
@@ -65,7 +65,8 @@ final class StatusItemController: NSObject {
   let tokens = TokenStore.appGroup()
   var configStore: AppConfigStore?
   var pollTimer: Timer?
-  var lastStatusLine = "Connect Invoicey"
+  var lastStatusLine = DriveConstants.domainDisplayName
+  var lastFileProviderError: String?
   var lastCounts = MirrorSyncResult()
 
   func install() {
@@ -96,13 +97,22 @@ final class StatusItemController: NSObject {
     let paired = (try? tokens.load()) != nil
 
     let statusLine = NSMenuItem(
-      title: paired ? lastStatusLine : "Connect Invoicey",
-      action: paired ? nil : #selector(connect),
+      title: DriveMenuCopy.statusTitle(paired: paired, lastStatusLine: lastStatusLine),
+      action: nil,
       keyEquivalent: ""
     )
-    statusLine.target = paired ? nil : self
-    statusLine.isEnabled = true
+    statusLine.isEnabled = false
     menu.addItem(statusLine)
+
+    if let fileProviderError = lastFileProviderError {
+      let finder = NSMenuItem(
+        title: "Finder Locations: \(fileProviderError)",
+        action: nil,
+        keyEquivalent: ""
+      )
+      finder.isEnabled = false
+      menu.addItem(finder)
+    }
 
     if paired, lastCounts.overdue > 0 {
       let overdue = NSMenuItem(
@@ -202,6 +212,14 @@ final class StatusItemController: NSObject {
   }
 
   @objc func openMirror() {
+    Task { await openDrive() }
+  }
+
+  func openDrive() async {
+    if let url = await FileProviderDomainRegistration.userVisibleRootURL() {
+      NSWorkspace.shared.open(url)
+      return
+    }
     let config = (try? configStore?.load()) ?? AppConfig()
     let url = config.resolvedMirrorURL
     try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
@@ -333,10 +351,10 @@ final class StatusItemController: NSObject {
       try PairingFlow.persist(result, tokens: tokens, config: store)
       lastStatusLine = "Connected"
       rebuildMenu()
-      await FileProviderDomainRegistration.sync(paired: true)
+      await syncFileProviderDomain()
       await syncNow(origin: "pair")
     } catch {
-      lastStatusLine = "Connect Invoicey"
+      lastStatusLine = DriveConstants.domainDisplayName
       rebuildMenu()
       present(error)
     }
@@ -348,7 +366,7 @@ final class StatusItemController: NSObject {
       var config = try store.load()
       guard let stored = try tokens.load() else {
         lastCounts = MirrorSyncResult()
-        lastStatusLine = "Connect Invoicey"
+        lastStatusLine = DriveConstants.domainDisplayName
         applyStatusAppearance()
         rebuildMenu()
         return
@@ -370,6 +388,7 @@ final class StatusItemController: NSObject {
         }
       }
       lastCounts = result
+      try? await FileProviderDomainRegistration.signalWorkingSet()
       if result.failed > 0 {
         lastStatusLine = "Sync finished with errors"
       } else if result.overdue > 0 {
@@ -382,8 +401,10 @@ final class StatusItemController: NSObject {
       applyStatusAppearance()
       rebuildMenu()
     } catch DriveError.notPaired, DriveError.unauthorized {
+      try? DriveSession.forgetLocalSession(tokens: tokens, config: store())
+      await syncFileProviderDomain()
       lastCounts = MirrorSyncResult()
-      lastStatusLine = "Connect Invoicey"
+      lastStatusLine = DriveConstants.domainDisplayName
       applyStatusAppearance()
       rebuildMenu()
     } catch {
@@ -399,14 +420,27 @@ final class StatusItemController: NSObject {
       let stored = try tokens.load()
       let client = DriveClient(baseURL: config.resolvedAPIURL, token: stored?.value)
       try await DriveSession.signOut(client: client, tokens: tokens, config: store)
-      await FileProviderDomainRegistration.sync(paired: false)
+      await syncFileProviderDomain()
       lastCounts = MirrorSyncResult()
-      lastStatusLine = "Connect Invoicey"
+      lastStatusLine = DriveConstants.domainDisplayName
       applyStatusAppearance()
       rebuildMenu()
     } catch {
       present(error)
     }
+  }
+
+  func syncFileProviderDomain() async {
+    let paired = (try? tokens.load()) != nil
+    switch await FileProviderDomainRegistration.sync(paired: paired) {
+    case .failed(let message):
+      lastFileProviderError = message
+    case .added, .alreadyPresent:
+      lastFileProviderError = nil
+    case .removed, .idleUnpaired, .skippedNotBundled:
+      lastFileProviderError = paired ? lastFileProviderError : nil
+    }
+    rebuildMenu()
   }
 
   func applyStatusAppearance() {
