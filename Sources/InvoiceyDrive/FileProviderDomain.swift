@@ -64,6 +64,14 @@ enum FileProviderDomainRegistration {
       return
     }
     try await manager.signalEnumerator(for: .workingSet)
+    try await manager.signalEnumerator(for: .rootContainer)
+  }
+
+  static func reimportRoot() async throws {
+    guard let manager = manager() else {
+      return
+    }
+    try await manager.reimportItems(below: .rootContainer)
   }
 
   static func isDomainPresent() async throws -> Bool {

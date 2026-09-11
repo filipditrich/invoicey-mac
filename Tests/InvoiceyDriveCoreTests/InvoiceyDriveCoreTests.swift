@@ -114,6 +114,13 @@ struct DriveConstantsTests {
     #expect(leaked.resolvedMirrorURL.lastPathComponent == "Invoicey Drive")
   }
 
+  @Test func leftoverHomeFolderIsNotAnExplicitMirror() {
+    let leftover = AppConfig(mirrorPath: "/Users/filip/Invoicey Drive")
+    #expect(!leftover.hasExplicitMirror)
+    #expect(leftover.explicitMirrorURL == nil)
+    #expect(AppConfig(mirrorBookmark: "abc").hasExplicitMirror)
+  }
+
   @Test func unsignedToolsDefaultToLocalhost() {
     #expect(
       DriveConstants.defaultAPIURLFromEnvironment(
@@ -259,6 +266,9 @@ struct MirrorPathTests {
     )
     #expect(year.map(\.filename) == ["faktura_12.pdf"])
     #expect(year.first?.id == .file(invoiceId: "inv-1", kind: .pdf))
+    #expect(year.first?.issuedAt == Date(timeIntervalSince1970: 1_720_000_000))
+    let workingSet = tree.allNodes().map(\.filename)
+    #expect(workingSet == ["Acme", "Filip Ditrich", "2026", "faktura_12.pdf"])
   }
 
   @Test func fileNodeCarriesDisplayStatus() throws {
@@ -360,5 +370,33 @@ struct FinderStatusLabelTests {
     #expect(result.overdue == 1)
     #expect(result.unpaid == 2)
     #expect(result.paid == 1)
+  }
+
+  @Test func countingUsesTheIndexWithoutAMirror() {
+    let generatedAt = Date(timeIntervalSince1970: 1_700_000_000)
+    let index = DriveIndex(
+      generatedAt: generatedAt,
+      items: [
+        DriveIndexItem(
+          invoiceId: "1",
+          workspaceId: "w",
+          issuerId: "i",
+          workspaceName: "W",
+          issuerName: "I",
+          layoutRelPath: "2026/faktura_1",
+          pdfSha256: "aa",
+          isdocSha256: "",
+          hasIsdoc: false,
+          includeIsdoc: false,
+          issuedAt: generatedAt,
+          docType: "invoice",
+          displayStatus: .overdue
+        ),
+      ]
+    )
+    let result = MirrorSyncResult.counting(index)
+    #expect(result.overdue == 1)
+    #expect(result.downloaded == 0)
+    #expect(result.generatedAt == generatedAt)
   }
 }

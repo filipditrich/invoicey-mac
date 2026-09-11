@@ -75,6 +75,12 @@ final class StatusItemController: NSObject {
     } catch {
       lastStatusLine = error.localizedDescription
     }
+    if (try? tokens.load()) != nil,
+      let iso = (try? configStore?.load())?.lastSyncedAt,
+      let title = DriveMenuCopy.lastSyncTitle(iso8601: iso)
+    {
+      lastStatusLine = title
+    }
     applyStatusAppearance()
     rebuildMenu()
   }
@@ -96,41 +102,23 @@ final class StatusItemController: NSObject {
     let config = (try? configStore?.load()) ?? AppConfig()
     let paired = (try? tokens.load()) != nil
 
-    let statusLine = NSMenuItem(
-      title: DriveMenuCopy.statusTitle(paired: paired, lastStatusLine: lastStatusLine),
-      action: nil,
-      keyEquivalent: ""
+    addDisabled(
+      DriveMenuCopy.headerTitle(
+        version: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+      ),
+      to: menu
     )
-    statusLine.isEnabled = false
-    menu.addItem(statusLine)
-
+    if let detail = DriveMenuCopy.detailStatus(paired: paired, lastStatusLine: lastStatusLine) {
+      addDisabled(detail, to: menu)
+    }
     if let fileProviderError = lastFileProviderError {
-      let finder = NSMenuItem(
-        title: "Finder Locations: \(fileProviderError)",
-        action: nil,
-        keyEquivalent: ""
-      )
-      finder.isEnabled = false
-      menu.addItem(finder)
+      addDisabled("Finder Locations: \(fileProviderError)", to: menu)
     }
-
-    if paired, lastCounts.overdue > 0 {
-      let overdue = NSMenuItem(
-        title: "Overdue · \(lastCounts.overdue)",
-        action: nil,
-        keyEquivalent: ""
-      )
-      overdue.isEnabled = false
-      menu.addItem(overdue)
+    if let overdue = DriveMenuCopy.overdueTitle(paired ? lastCounts.overdue : 0) {
+      addDisabled(overdue, to: menu)
     }
-    if paired, lastCounts.unpaid > 0 {
-      let unpaid = NSMenuItem(
-        title: "Unpaid · \(lastCounts.unpaid)",
-        action: nil,
-        keyEquivalent: ""
-      )
-      unpaid.isEnabled = false
-      menu.addItem(unpaid)
+    if let unpaid = DriveMenuCopy.unpaidTitle(paired ? lastCounts.unpaid : 0) {
+      addDisabled(unpaid, to: menu)
     }
 
     let openItem = NSMenuItem(
@@ -149,7 +137,7 @@ final class StatusItemController: NSObject {
     menu.addItem(.separator())
 
     let mirrorTitle: String
-    if let path = config.mirrorPath, !path.isEmpty {
+    if config.hasExplicitMirror, let path = config.explicitMirrorURL?.path {
       mirrorTitle = "Mirror folder: \(Self.displayPath(path))"
     } else {
       mirrorTitle = "Set mirror…"
@@ -165,13 +153,7 @@ final class StatusItemController: NSObject {
     menu.addItem(.separator())
 
     if paired {
-      let account = NSMenuItem(
-        title: "Account · \(config.deviceId.map { String($0.prefix(8)) } ?? "signed in")",
-        action: nil,
-        keyEquivalent: ""
-      )
-      account.isEnabled = false
-      menu.addItem(account)
+      addDisabled("Connected", to: menu)
 
       let signOut = NSMenuItem(title: "Sign out", action: #selector(signOutClicked), keyEquivalent: "")
       signOut.target = self
@@ -220,10 +202,9 @@ final class StatusItemController: NSObject {
       NSWorkspace.shared.open(url)
       return
     }
-    let config = (try? configStore?.load()) ?? AppConfig()
-    let url = config.resolvedMirrorURL
-    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true)
-    NSWorkspace.shared.open(url)
+    if let url = (try? configStore?.load())?.explicitMirrorURL {
+      NSWorkspace.shared.open(url)
+    }
   }
 
   @objc func setMirror() {
@@ -363,7 +344,7 @@ final class StatusItemController: NSObject {
   func syncNow(origin _: String) async {
     do {
       let store = try store()
-      var config = try store.load()
+      let config = try store.load()
       guard let stored = try tokens.load() else {
         lastCounts = MirrorSyncResult()
         lastStatusLine = DriveConstants.domainDisplayName
@@ -371,30 +352,23 @@ final class StatusItemController: NSObject {
         rebuildMenu()
         return
       }
-      if let bookmarked = try? MirrorBookmark.resolve(config.mirrorBookmark) {
-        config.mirrorPath = bookmarked.path
-      }
-      let root = config.resolvedMirrorURL
-      try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
       let client = DriveClient(baseURL: config.resolvedAPIURL, token: stored.value)
       lastStatusLine = "Syncing…"
       rebuildMenu()
-      let result = try await MirrorSynchronizer(client: client, root: root).sync()
+      let result: MirrorSyncResult
+      if let root = config.explicitMirrorURL {
+        result = try await MirrorSynchronizer(client: client, root: root).sync()
+      } else {
+        result = MirrorSyncResult.counting(try await client.fetchIndex())
+      }
       try store.update { current in
         current.lastSyncedAt = ISO8601DateFormatter().string(from: Date())
         current.lastError = result.failed > 0 ? "\(result.failed) file(s) failed" : nil
-        if current.mirrorPath == nil {
-          current.mirrorPath = root.path
-        }
       }
       lastCounts = result
       try? await FileProviderDomainRegistration.signalWorkingSet()
       if result.failed > 0 {
         lastStatusLine = "Sync finished with errors"
-      } else if result.overdue > 0 {
-        lastStatusLine = "\(result.overdue) overdue"
-      } else if result.unpaid > 0 {
-        lastStatusLine = "\(result.unpaid) unpaid"
       } else {
         lastStatusLine = "Synced just now"
       }
@@ -437,16 +411,22 @@ final class StatusItemController: NSObject {
       lastFileProviderError = message
     case .added, .alreadyPresent:
       lastFileProviderError = nil
+      try? await FileProviderDomainRegistration.reimportRoot()
     case .removed, .idleUnpaired, .skippedNotBundled:
       lastFileProviderError = paired ? lastFileProviderError : nil
     }
     rebuildMenu()
   }
 
+  func addDisabled(_ title: String, to menu: NSMenu) {
+    let item = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+    item.isEnabled = false
+    menu.addItem(item)
+  }
+
   func applyStatusAppearance() {
     guard let button = statusItem.button else { return }
-    button.image = StatusMark.image(severity: lastCounts.menuSeverity)
-    button.image?.isTemplate = lastCounts.menuSeverity == .idle
+    button.image = StatusMark.image()
     button.toolTip = statusTooltip()
   }
 

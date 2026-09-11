@@ -1,30 +1,7 @@
 import AppKit
-import InvoiceyDriveCore
-
-enum MenuSeverity: Sendable {
-  case idle
-  case unpaid
-  case overdue
-}
 
 enum StatusMark {
-  static func image(severity: MenuSeverity) -> NSImage {
-    let source = glyph(template: severity == .idle)
-    switch severity {
-    case .idle:
-      return source
-    case .unpaid:
-      return tint(
-        source,
-        NSColor(srgbRed: 0.976_470_6, green: 0.450_980_4, blue: 0.086_274_5, alpha: 1)
-      )
-    case .overdue:
-      return tint(source, NSColor(srgbRed: 1, green: 0.231, blue: 0.188, alpha: 1))
-    }
-  }
-
-  /// Invoicey I monogram, drawn as a menu-bar silhouette.
-  static func glyph(template: Bool) -> NSImage {
+  static func image() -> NSImage {
     let size = NSSize(width: 18, height: 18)
     let pixels = 36
     guard
@@ -50,7 +27,7 @@ enum StatusMark {
     NSGraphicsContext.restoreGraphicsState()
     let image = NSImage(size: size)
     image.addRepresentation(rep)
-    image.isTemplate = template
+    image.isTemplate = true
     return image
   }
 
@@ -84,33 +61,5 @@ enum StatusMark {
     }
     ctx.fillPath()
     ctx.restoreGState()
-  }
-
-  static func tint(_ source: NSImage, _ color: NSColor) -> NSImage {
-    let image = NSImage(size: source.size)
-    image.lockFocus()
-    source.draw(
-      in: NSRect(origin: .zero, size: source.size),
-      from: .zero,
-      operation: .sourceOver,
-      fraction: 1
-    )
-    color.set()
-    NSRect(origin: .zero, size: source.size).fill(using: .sourceAtop)
-    image.unlockFocus()
-    image.isTemplate = false
-    return image
-  }
-}
-
-extension MirrorSyncResult {
-  var menuSeverity: MenuSeverity {
-    if overdue > 0 {
-      return .overdue
-    }
-    if unpaid > 0 {
-      return .unpaid
-    }
-    return .idle
   }
 }

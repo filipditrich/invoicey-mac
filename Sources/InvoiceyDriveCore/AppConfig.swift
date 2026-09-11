@@ -32,12 +32,31 @@ public struct AppConfig: Codable, Sendable, Equatable {
   }
 
   public var resolvedMirrorURL: URL {
+    explicitMirrorURL ?? DriveConstants.defaultMirrorDirectory()
+  }
+
+  /// True only when the user picked a folder in the menu. The old default
+  /// `~/Invoicey Drive` path is not a Locations domain and is not a mirror.
+  public var hasExplicitMirror: Bool {
+    if let mirrorBookmark, !mirrorBookmark.isEmpty {
+      return true
+    }
+    return false
+  }
+
+  public var explicitMirrorURL: URL? {
+    guard hasExplicitMirror else {
+      return nil
+    }
+    if let bookmarked = try? MirrorBookmark.resolve(mirrorBookmark) {
+      return bookmarked
+    }
     if let mirrorPath, !mirrorPath.isEmpty,
       !DriveConstants.isSandboxContainerPath(mirrorPath)
     {
       return URL(fileURLWithPath: (mirrorPath as NSString).expandingTildeInPath)
     }
-    return DriveConstants.defaultMirrorDirectory()
+    return nil
   }
 }
 

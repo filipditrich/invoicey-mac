@@ -114,6 +114,14 @@ public struct MirrorSyncResult: Sendable, Equatable {
     self.generatedAt = generatedAt
   }
 
+  public static func counting(_ index: DriveIndex) -> MirrorSyncResult {
+    var result = MirrorSyncResult(generatedAt: index.generatedAt)
+    for item in index.items {
+      result.tally(item.displayStatus)
+    }
+    return result
+  }
+
   public mutating func tally(_ status: InvoiceDisplayStatus?) {
     switch status {
     case .overdue:

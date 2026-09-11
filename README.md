@@ -75,7 +75,7 @@ Layout comes from the server (`{year}/{kind}_{number}` by default). Identity is 
 | **Color labels** | Same `displayStatus` as the website: green paid, orange unpaid or not yet due, red overdue. Finder **tags** plus the classic label number. Status is not in the filename. Proton/iCloud often drop tags. |
 | **Optional mirror** | iCloud, Proton Drive, or a local `_faktury` folder. Same relative paths as the index. |
 | **Pairing** | Starts in the Mac app (PKCE). Confirm **Connect this Mac** on Invoicey. Device token in Keychain. Not a Settings PAT. |
-| **Menu bar** | Invoicey I monogram. Tints red when anything is overdue, orange when unpaid. Overdue and unpaid counts in the menu. Sync now, open the mirror, sign out. Check for Updates once a day and from the menu. Polls every 60s and on wake. |
+| **Menu bar** | Invoicey I monogram (template, follows the system). Version, last sync, and overdue/unpaid counts in the menu. Sync now, open Locations, optional mirror, sign out. Check for Updates once a day and from the menu. Polls every 60s and on wake. |
 | **macOS 14+** | Distributed as a notarized `.dmg`. Not the Mac App Store. |
 
 Finder Locations (a real **Invoicey Drive** domain next to Proton Drive) ships from `InvoiceyDrive.xcodeproj` (app `me.ditrich.invoicey.drive` + File Provider `me.ditrich.invoicey.drive.provider`, Team `72T6DX5YZU`). `swift run` is the mirror folder only.

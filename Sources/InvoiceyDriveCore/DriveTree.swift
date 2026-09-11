@@ -82,6 +82,7 @@ public struct DriveNode: Equatable, Sendable {
   public var sha256: String?
   public var displayStatus: InvoiceDisplayStatus?
   public var contentTypeIdentifier: String
+  public var issuedAt: Date?
 
   public init(
     id: DriveItemID,
@@ -92,7 +93,8 @@ public struct DriveNode: Equatable, Sendable {
     fileKind: DriveFileKind? = nil,
     sha256: String? = nil,
     displayStatus: InvoiceDisplayStatus? = nil,
-    contentTypeIdentifier: String
+    contentTypeIdentifier: String,
+    issuedAt: Date? = nil
   ) {
     self.id = id
     self.parent = parent
@@ -103,6 +105,7 @@ public struct DriveNode: Equatable, Sendable {
     self.sha256 = sha256
     self.displayStatus = displayStatus
     self.contentTypeIdentifier = contentTypeIdentifier
+    self.issuedAt = issuedAt
   }
 }
 
@@ -193,7 +196,8 @@ public struct DriveTree: Sendable, Equatable {
         fileKind: kind,
         sha256: kind == .pdf ? item.pdfSha256 : item.isdocSha256,
         displayStatus: item.displayStatus,
-        contentTypeIdentifier: kind == .pdf ? "com.adobe.pdf" : "public.xml"
+        contentTypeIdentifier: kind == .pdf ? "com.adobe.pdf" : "public.xml",
+        issuedAt: item.issuedAt
       )
     }
   }
@@ -214,6 +218,27 @@ public struct DriveTree: Sendable, Equatable {
     case .file:
       return []
     }
+  }
+
+  /// Working-set payload: parent folders first, then files. Files alone stall FPFS on
+  /// `parentCreation` and stay 0-byte placeholders.
+  public func allNodes() -> [DriveNode] {
+    var seen = Set<DriveItemID>()
+    var nodes: [DriveNode] = []
+    func addAncestorsThenNode(_ id: DriveItemID) {
+      guard seen.insert(id).inserted else {
+        return
+      }
+      guard id != .root, id != .workingSet, let node = node(for: id) else {
+        return
+      }
+      addAncestorsThenNode(node.parent)
+      nodes.append(node)
+    }
+    for file in allFiles() {
+      addAncestorsThenNode(file.id)
+    }
+    return nodes
   }
 
   public func allFiles() -> [DriveNode] {

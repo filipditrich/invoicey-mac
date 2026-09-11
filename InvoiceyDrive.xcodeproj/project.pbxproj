@@ -41,6 +41,7 @@
 		F1260609EDCD1D8188F24995 /* DriveTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84ACC52CFA65C350C1B64FB3 /* DriveTree.swift */; };
 		F1C32E7C562A23C86192855F /* InvoiceyDriveItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52618B13CB78CC829164B234 /* InvoiceyDriveItem.swift */; };
 		F3BBA131C5CA80797CD19CD3 /* InvoiceyDriveProvider.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 7399F8079B33DE8AD925FE16 /* InvoiceyDriveProvider.appex */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		F8965325896354B1681C3727 /* FileProviderHydration.swift in Sources */ = {isa = PBXBuildFile; fileRef = B995615317F85E1A5042DED8 /* FileProviderHydration.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -107,6 +108,7 @@
 		A8E0A02AB25C4C93BFDBCEA4 /* AppConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConfig.swift; sourceTree = "<group>"; };
 		AB16B03B05E559A9161F038B /* PairingMailbox.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PairingMailbox.swift; sourceTree = "<group>"; };
 		AD921F3DD7D70D46FDD728EA /* libInvoiceyDriveCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libInvoiceyDriveCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B995615317F85E1A5042DED8 /* FileProviderHydration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderHydration.swift; sourceTree = "<group>"; };
 		BC72A34F277E4710F423C45A /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderStatusLabel.swift; sourceTree = "<group>"; };
 		C866367F503FB29CB18C2388 /* InvoiceyDrive.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = InvoiceyDrive.icns; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				0051B8A759A2D5B0EFF5838E /* DriveSession.swift */,
 				84ACC52CFA65C350C1B64FB3 /* DriveTree.swift */,
 				E047DBA2AE84ED77BDFC1BD1 /* FileProviderDomainPolicy.swift */,
+				B995615317F85E1A5042DED8 /* FileProviderHydration.swift */,
 				C43A72816786654A0E4D61BC /* FinderStatusLabel.swift */,
 				3C7B7E8F18CB458A8A3D255D /* MirrorSync.swift */,
 				BC72A34F277E4710F423C45A /* Models.swift */,
@@ -396,6 +399,7 @@
 				9BD670B33158BE1D3B4D7965 /* DriveSession.swift in Sources */,
 				F1260609EDCD1D8188F24995 /* DriveTree.swift in Sources */,
 				609C0AC3E77B24427D5D6A71 /* FileProviderDomainPolicy.swift in Sources */,
+				F8965325896354B1681C3727 /* FileProviderHydration.swift in Sources */,
 				4151CD5A04B3A79461A63E7D /* FinderStatusLabel.swift in Sources */,
 				858AEC7FEC745BBD41BBD0D5 /* MirrorSync.swift in Sources */,
 				1737367BB086DA4F05FDD686 /* Models.swift in Sources */,
@@ -473,7 +477,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_INJECT_BASE_ENTITLEMENTS = NO;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -489,7 +493,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.6;
+				MARKETING_VERSION = 0.1.8;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
@@ -536,7 +540,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 8;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = 72T6DX5YZU;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -557,7 +561,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.0;
-				MARKETING_VERSION = 0.1.6;
+				MARKETING_VERSION = 0.1.8;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;

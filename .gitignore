@@ -4,6 +4,7 @@
 xcuserdata/
 *.xcuserstate
 DerivedData/
+dist/
 .env
 .env.*
 debug-token
